@@ -6799,14 +6799,14 @@ var parseVariable = function (variable) { return ({
     value: variable.declarations[0].init ? variable.declarations[0].init.value : undefined,
     kind: variable.kind
 }); };
-var isVariableDeclaration = function (c) { return c.constructor.name === 'VariableDeclaration'; };
+var isVariableDeclaration = function (code) { return code.constructor.name === 'VariableDeclaration'; };
 var filterVariables = function (code) { return code.filter(isVariableDeclaration); };
 var getAllVariables = function (code) {
     return filterVariables(code).map(parseVariable);
 };
 var getVariableByName = function (code, name) {
     for (var _i = 0, _a = filterVariables(code); _i < _a.length; _i++) {
-        vars = _a[_i];
+        var vars = _a[_i];
         if (vars.declarations[0].id.name === name) {
             return true;
         }
@@ -6816,7 +6816,7 @@ var getVariableByName = function (code, name) {
 var parseExpression = function (ex) { return ({
     type: ex.expression.type
 }); };
-var isExpression = function (c) { return c.constructor.name === 'ExpressionStatement'; };
+var isExpression = function (code) { return code.constructor.name === 'ExpressionStatement'; };
 var filterExpressions = function (code) { return code.filter(isExpression); };
 var isAssignment = function (ex) { return ex.expression.type === 'AssignmentExpression'; };
 var filterAssignments = function (code) { return filterExpressions(code).filter(isAssignment); };
@@ -6830,13 +6830,13 @@ var parseFunction = function (func) { return ({
     isGenerator: func.generator,
     hasReturnStatement: func.body.body.filter(isReturnStatement).length > 0
 }); };
-var isFunctionDeclaration = function (c) { return c.constructor.name === 'FunctionDeclaration'; };
+var isFunctionDeclaration = function (code) { return code.constructor.name === 'FunctionDeclaration'; };
 var filterFunctions = function (code) { return code.filter(isFunctionDeclaration); };
 var isReturnStatement = function (code) { return code.constructor.name === 'ReturnStatement'; };
 var getAllFunctions = function (code) { return filterFunctions(code).map(parseFunction); };
 var getFunctionByName = function (code, name) {
     for (var _i = 0, _a = filterFunctions(code); _i < _a.length; _i++) {
-        funcs = _a[_i];
+        var funcs = _a[_i];
         if (parseFunction(funcs).name === name) {
             return true;
         }
