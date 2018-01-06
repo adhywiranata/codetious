@@ -6,11 +6,11 @@ const parseDeep = code => util.inspect(code, false, null);
 // VARIABLES
 
 // return all variable declarations
-const isVariableDeclaration = p => p.constructor.name === 'VariableDeclaration';
+const isVariableDeclaration = c => c.constructor.name === 'VariableDeclaration';
 const filterVariables = code => code.filter(isVariableDeclaration);
 
 // return all expressions
-const isExpression = p => p.constructor.name === 'ExpressionStatement';
+const isExpression = c => c.constructor.name === 'ExpressionStatement';
 const filterExpressions = code => code.filter(isExpression);
 
 // return all assignment expressions
@@ -56,6 +56,32 @@ const getVariableByName = (code, name) => {
   return false;
 };
 
+// FUNCTIONS
+
+const isFunctionDeclaration = c => c.constructor.name === 'FunctionDeclaration';
+const filterFunctions = code => code.filter(isFunctionDeclaration);
+
+const isReturnStatement = code => code.constructor.name === 'ReturnStatement';
+const parseFunction = func => ({
+  name: func.id.name,
+  params: func.params.map(param => param.name),
+  isAsync: func.async,
+  isFunctionExpression: func.expression,
+  isGenerator: func.generator,
+  hasReturnStatement: func.body.body.filter(isReturnStatement).length > 0,
+});
+
+const getAllFunctions = code => filterFunctions(code).map(parseFunction);
+const getFunctionByName = (code, name) => {
+  for(funcs of filterFunctions(code)) {
+    if(parseFunction(funcs).name === name) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 module.exports = {
   parseDeep,
   // Variables
@@ -67,4 +93,7 @@ module.exports = {
   filterAssignments,
   getAllExpressions,
   getAllAssignments,
+  // Functions
+  getAllFunctions,
+  getFunctionByName,
 };

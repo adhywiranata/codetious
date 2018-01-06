@@ -25,4 +25,20 @@ jon();
 `;
 
 // console.log(codetious.parseDeep(sampleCode2));
-console.log(codetious.getAllAssignments(sampleCode2));
+// console.log(codetious.getAllAssignments(sampleCode2));
+
+const sampleCode3 = `
+function hello(param1, param2) {
+  var x = 5;
+  var y = 6;
+  return 'wow';
+}
+
+function hoy() {
+  console.log('yeah');
+}
+`;
+
+console.log(codetious.parseDeep(sampleCode3));
+console.log(codetious.getAllFunctions(sampleCode3));
+console.log(codetious.getFunctionByName(sampleCode3, 'hello'));
