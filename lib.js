@@ -1,5 +1,4 @@
 const esprima = require('esprima');
-const util = require('util');
 
 const selectors = require('./selectors');
 
