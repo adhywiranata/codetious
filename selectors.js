@@ -4,19 +4,6 @@ const parseDeep = code => util.inspect(code, false, null);
 // shallow selectors
 
 // VARIABLES
-
-// return all variable declarations
-const isVariableDeclaration = c => c.constructor.name === 'VariableDeclaration';
-const filterVariables = code => code.filter(isVariableDeclaration);
-
-// return all expressions
-const isExpression = c => c.constructor.name === 'ExpressionStatement';
-const filterExpressions = code => code.filter(isExpression);
-
-// return all assignment expressions
-const isAssignment = ex => ex.expression.type === 'AssignmentExpression';
-const filterAssignments = code => filterExpressions(code).filter(isAssignment);
-
 // parse easy to read variable object
 const parseVariable = variable => ({
   name: variable.declarations[0].id.name,
@@ -24,27 +11,14 @@ const parseVariable = variable => ({
   kind: variable.kind, // var, let, or const
 });
 
+// return all variable declarations
+const isVariableDeclaration = c => c.constructor.name === 'VariableDeclaration';
+const filterVariables = code => code.filter(isVariableDeclaration);
+
 // get all valid variables (var, let, const)
 const getAllVariables = code => {
   return filterVariables(code).map(parseVariable);
 };
-
-// parse easy to read expression object
-const parseExpression = ex => ({
-  type: ex.expression.type,
-});
-
-// EXPRESSIONS
-
-// get all expressions
-/*
-expression types:
-- CallExpression: call a function
-- AssignmentExpression: assign value to a variable
-- BinaryExpression: does something..
-*/
-const getAllExpressions = code => filterExpressions(code).map(parseExpression);
-const getAllAssignments = code => filterAssignments(code).map(parseExpression);
 
 // shallowly checks if the code contains certain variable name
 const getVariableByName = (code, name) => {
@@ -56,12 +30,37 @@ const getVariableByName = (code, name) => {
   return false;
 };
 
+// EXPRESSIONS
+
+// get all expressions
+/*
+expression types:
+- CallExpression: call a function
+- AssignmentExpression: assign value to a variable
+- BinaryExpression: does processes that don't hold value
+*/
+
+// parse easy to read expression object
+const parseExpression = ex => ({
+  type: ex.expression.type,
+});
+
+// expressions types filters
+const isExpression = c => c.constructor.name === 'ExpressionStatement';
+const filterExpressions = code => code.filter(isExpression);
+
+const isAssignment = ex => ex.expression.type === 'AssignmentExpression';
+const filterAssignments = code => filterExpressions(code).filter(isAssignment);
+
+// get all expressions with any type
+const getAllExpressions = code => filterExpressions(code).map(parseExpression);
+
+// get all assignment only expressions
+const getAllAssignments = code => filterAssignments(code).map(parseExpression);
+
 // FUNCTIONS
 
-const isFunctionDeclaration = c => c.constructor.name === 'FunctionDeclaration';
-const filterFunctions = code => code.filter(isFunctionDeclaration);
-
-const isReturnStatement = code => code.constructor.name === 'ReturnStatement';
+// parse easy to read function object
 const parseFunction = func => ({
   name: func.id.name,
   params: func.params.map(param => param.name),
@@ -71,7 +70,14 @@ const parseFunction = func => ({
   hasReturnStatement: func.body.body.filter(isReturnStatement).length > 0,
 });
 
+const isFunctionDeclaration = c => c.constructor.name === 'FunctionDeclaration';
+const filterFunctions = code => code.filter(isFunctionDeclaration);
+const isReturnStatement = code => code.constructor.name === 'ReturnStatement';
+
+// get all valid functions declaration
 const getAllFunctions = code => filterFunctions(code).map(parseFunction);
+
+// get a function 
 const getFunctionByName = (code, name) => {
   for(funcs of filterFunctions(code)) {
     if(parseFunction(funcs).name === name) {
