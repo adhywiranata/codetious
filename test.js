@@ -24,5 +24,5 @@ jon();
 7;
 `;
 
-console.log(codetious.parseDeep(sampleCode2));
-console.log(codetious.getAllExpressions(sampleCode2));
+// console.log(codetious.parseDeep(sampleCode2));
+console.log(codetious.getAllAssignments(sampleCode2));
