@@ -2,9 +2,10 @@ const esprima = require('esprima');
 
 const selectors = require('./selectors');
 
-const exposedModule = {};
+const exposedModule: any = {};
+
 Object.keys(selectors).map((key) => {
-  exposedModule[key] = (code, ...params) =>
+  exposedModule[key] = (code: string, ...params: any[]) =>
     selectors[key](esprima.parseScript(code).body, ...params);
 });
 
