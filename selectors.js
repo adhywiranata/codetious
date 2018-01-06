@@ -2,19 +2,29 @@ const util = require('util');
 const parseDeep = parsed => util.inspect(parsed, false, null);
 
 // shallow selectors
-const filterVariables = parsed =>
-  parsed.filter(p => p.constructor.name === 'VariableDeclaration');
 
-const filterExpressions = parsed =>
-  parsed.filter(p => p.constructor.name === 'ExpressionStatement');
+// return all variable declarations
+const isVariableDeclaration = p => p.constructor.name === 'VariableDeclaration';
+const filterVariables = parsed => parsed.filter(isVariableDeclaration);
+
+// return all expressions
+const isExpression = p => p.constructor.name === 'ExpressionStatement';
+const filterExpressions = parsed => parsed.filter(isExpression);
+
+// return all assignment expressions
+// const filterAssignments = parsed =>
+//   parsed
 
 // get all valid variables (var, let, const)
+
+const parseVariable = variable => ({
+  name: variable.declarations[0].id.name,
+  value: variable.declarations[0].init ? variable.declarations[0].init.value : undefined,
+  kind: variable.kind,
+});
+
 const getAllVariables = parsed => {
-  return filterVariables(parsed).map(variable => ({
-    name: variable.declarations[0].id.name,
-    value: variable.declarations[0].init ? variable.declarations[0].init.value : undefined,
-    kind: variable.kind,
-  }));
+  return filterVariables(parsed).map(parseVariable);
 };
 
 // get all expressions
@@ -25,13 +35,11 @@ expression types:
 - BinaryExpression: does something..
 
 */
-const getAllExpressions = parsed => {
-  return filterExpressions(parsed)
-    .map(expressionObj => expressionObj.expression)
-    .map(expression => ({
-      type: expression.type,
-    }));
-};
+const parseExpression = ex => ({
+  type: ex.expression.type,
+});
+
+const getAllExpressions = parsed => filterExpressions(parsed).map(parseExpression);
 
 // shallowly checks if the code contains certain variable name
 const getVariableByName = (parsed, name) => {
