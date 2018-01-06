@@ -21,7 +21,7 @@ const filterAssignments = code => filterExpressions(code).filter(isAssignment);
 const parseVariable = variable => ({
   name: variable.declarations[0].id.name,
   value: variable.declarations[0].init ? variable.declarations[0].init.value : undefined,
-  kind: variable.kind,
+  kind: variable.kind, // var, let, or const
 });
 
 // get all valid variables (var, let, const)
