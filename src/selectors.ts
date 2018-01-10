@@ -8,6 +8,7 @@ const parseDeep = (code: any) => util.inspect(code, false, null);
 const parseVariable = (variable: any) => ({
   name: variable.declarations[0].id.name,
   value: variable.declarations[0].init ? variable.declarations[0].init.value : undefined,
+  type: variable.declarations[0].init ? typeof variable.declarations[0].init.value : undefined,
   kind: variable.kind, // var, let, or const
 });
 
@@ -22,9 +23,9 @@ const getAllVariables = (code: any) => {
 
 // shallowly checks if the code contains certain variable name
 const getVariableByName = (code: any, name: string) => {
-  for(let vars of filterVariables(code)) {
-    if(vars.declarations[0].id.name === name) {
-      return true;
+  for(let v of filterVariables(code)) {
+    if(v.declarations[0].id.name === name) {
+      return parseVariable(v);
     }
   }
   return false;

@@ -70,6 +70,7 @@ module.exports =
 
 var esprima = __webpack_require__(1);
 var selectors = __webpack_require__(2);
+var validators = __webpack_require__(8);
 var exposedModule = {};
 Object.keys(selectors).map(function (key) {
     exposedModule[key] = function (code) {
@@ -78,6 +79,15 @@ Object.keys(selectors).map(function (key) {
             params[_i - 1] = arguments[_i];
         }
         return selectors[key].apply(selectors, [esprima.parseScript(code).body].concat(params));
+    };
+});
+Object.keys(validators).map(function (key) {
+    exposedModule[key] = function (code) {
+        var params = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            params[_i - 1] = arguments[_i];
+        }
+        return validators[key].apply(validators, [esprima.parseScript(code).body].concat(params));
     };
 });
 module.exports = exposedModule;
@@ -6797,6 +6807,7 @@ var parseDeep = function (code) { return util.inspect(code, false, null); };
 var parseVariable = function (variable) { return ({
     name: variable.declarations[0].id.name,
     value: variable.declarations[0].init ? variable.declarations[0].init.value : undefined,
+    type: variable.declarations[0].init ? typeof variable.declarations[0].init.value : undefined,
     kind: variable.kind
 }); };
 var isVariableDeclaration = function (code) { return code.constructor.name === 'VariableDeclaration'; };
@@ -6806,9 +6817,9 @@ var getAllVariables = function (code) {
 };
 var getVariableByName = function (code, name) {
     for (var _i = 0, _a = filterVariables(code); _i < _a.length; _i++) {
-        var vars = _a[_i];
-        if (vars.declarations[0].id.name === name) {
-            return true;
+        var v = _a[_i];
+        if (v.declarations[0].id.name === name) {
+            return parseVariable(v);
         }
     }
     return false;
@@ -7705,6 +7716,13 @@ if (typeof Object.create === 'function') {
     ctor.prototype.constructor = ctor
   }
 }
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports) {
+
+module.exports = {};
 
 
 /***/ })
