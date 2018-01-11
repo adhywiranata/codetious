@@ -4,8 +4,8 @@ const path = require('path');
 module.exports = {
   entry: './src/lib.ts',
   output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: 'bundle.js',
+    path: path.resolve(__dirname),
+    filename: 'index.js',
     library: 'codetious',
     libraryTarget: 'commonjs2'
   },

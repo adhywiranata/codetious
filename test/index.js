@@ -1,4 +1,4 @@
-const codetious = require('./dist/bundle.js');
+const codetious = require('..');
 
 const sampleCode1 = `
 let num = 5;
