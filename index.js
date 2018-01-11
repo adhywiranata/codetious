@@ -61,19 +61,49 @@ module.exports =
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ 	return __webpack_require__(__webpack_require__.s = 1);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports) {
+
+var parseBinary = function (statement) { return ({
+    operator: statement.expression.operator,
+    leftValue: statement.expression.left.value || null,
+    rightValue: statement.expression.right.value || null
+}); };
+var isValidBinary = function (statement) {
+    if (statement.type === 'ExpressionStatement') {
+        if (statement.expression.type === 'BinaryExpression') {
+            return true;
+        }
+    }
+    return false;
+};
+var getBinary = function (statement) {
+    if (isValidBinary(statement)) {
+        return parseBinary(statement);
+    }
+    return { error: 'Not a binary Statement' };
+};
+module.exports = {
+    isValidBinary: isValidBinary,
+    getBinary: getBinary
+};
+
+
+/***/ }),
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var esprima = __webpack_require__(1);
-var commonSelectors = __webpack_require__(2);
-var variableSelectors = __webpack_require__(8);
-var expressionSelectors = __webpack_require__(9);
-var functionSelectors = __webpack_require__(10);
-var validators = __webpack_require__(11);
+var esprima = __webpack_require__(2);
+var commonSelectors = __webpack_require__(3);
+var variableSelectors = __webpack_require__(9);
+var expressionSelectors = __webpack_require__(10);
+var functionSelectors = __webpack_require__(11);
+var rootValidators = __webpack_require__(0);
+var rootEvaluators = __webpack_require__(12);
 var exposedModule = {};
 var selectors = {
     commonSelectors: commonSelectors,
@@ -81,7 +111,7 @@ var selectors = {
     expressionSelectors: expressionSelectors,
     functionSelectors: functionSelectors
 };
-var parser = function (code) {
+var esprimaParser = function (code) {
     try {
         var parsed = esprima.parseScript(code);
         return parsed.body;
@@ -100,24 +130,21 @@ Object.keys(selectors).map(function (selectorKey) {
                 params[_i - 1] = arguments[_i];
             }
             var currentChildSelector = selectors[selectorKey];
-            return currentChildSelector[childSelectorKey].apply(currentChildSelector, [parser(code)].concat(params));
+            return currentChildSelector[childSelectorKey].apply(currentChildSelector, [esprimaParser(code)].concat(params));
         };
     });
 });
-Object.keys(validators).map(function (key) {
-    exposedModule[key] = function (code) {
-        var params = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            params[_i - 1] = arguments[_i];
-        }
-        return validators[key].apply(validators, [parser(code)].concat(params));
-    };
+Object.keys(rootValidators).map(function (key) {
+    exposedModule[key] = rootValidators[key];
+});
+Object.keys(rootEvaluators).map(function (key) {
+    exposedModule[key] = rootEvaluators[key];
 });
 module.exports = exposedModule;
 
 
 /***/ }),
-/* 1 */
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -6822,19 +6849,21 @@ return /******/ (function(modules) { // webpackBootstrap
 ;
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var util = __webpack_require__(3);
-var parseDeep = function (code) { return util.inspect(code, false, null); };
+var util = __webpack_require__(4);
+var parseDeep = function (code) { return code; };
+var parseDeepToString = function (code) { return util.inspect(code, false, null); };
 var commonSelector = {
-    parseDeep: parseDeep
+    parseDeep: parseDeep,
+    parseDeepToString: parseDeepToString
 };
 module.exports = commonSelector;
 
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {// Copyright Joyent, Inc. and other Node contributors.
@@ -7362,7 +7391,7 @@ function isPrimitive(arg) {
 }
 exports.isPrimitive = isPrimitive;
 
-exports.isBuffer = __webpack_require__(6);
+exports.isBuffer = __webpack_require__(7);
 
 function objectToString(o) {
   return Object.prototype.toString.call(o);
@@ -7406,7 +7435,7 @@ exports.log = function() {
  *     prototype.
  * @param {function} superCtor Constructor function to inherit prototype from.
  */
-exports.inherits = __webpack_require__(7);
+exports.inherits = __webpack_require__(8);
 
 exports._extend = function(origin, add) {
   // Don't do anything if add isn't an object
@@ -7424,10 +7453,10 @@ function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(5)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5), __webpack_require__(6)))
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports) {
 
 var g;
@@ -7454,7 +7483,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -7644,7 +7673,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports) {
 
 module.exports = function isBuffer(arg) {
@@ -7655,7 +7684,7 @@ module.exports = function isBuffer(arg) {
 }
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports) {
 
 if (typeof Object.create === 'function') {
@@ -7684,7 +7713,7 @@ if (typeof Object.create === 'function') {
 
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports) {
 
 var parseVariable = function (variable) { return ({
@@ -7716,7 +7745,7 @@ module.exports = variableSelector;
 
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports) {
 
 var parseExpressionArgument = function (arg) { return ({
@@ -7755,7 +7784,7 @@ module.exports = expressionSelector;
 
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports) {
 
 var parseFunction = function (func) { return ({
@@ -7787,10 +7816,20 @@ module.exports = functionSelector;
 
 
 /***/ }),
-/* 11 */
-/***/ (function(module, exports) {
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
 
-module.exports = {};
+var validator = __webpack_require__(0);
+var evaluateBinary = function (statement) {
+    console.log(statement);
+    if (validator.isValidBinary(statement)) {
+        console.log(validator.isValidBinary(statement));
+    }
+    console.log('not a valid binary!');
+};
+module.exports = {
+    evaluateBinary: evaluateBinary
+};
 
 
 /***/ })

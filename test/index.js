@@ -95,5 +95,15 @@ const sampleCode7 = `
   console.log();
 `;
 
-console.log(codetious.parseDeep(sampleCode7));
-console.log(codetious.getAllConsoleOps(sampleCode7));
+// console.log(codetious.parseDeep(sampleCode7));
+// console.log(codetious.getAllConsoleOps(sampleCode7));
+
+const sampleCode8 = `
+  5 + 7
+`
+
+// console.log(codetious.parseDeep(sampleCode8));
+
+const parsedCode8 = codetious.parseDeep(sampleCode8);
+// console.log(parsedCode8[0].expression);
+console.log(codetious.getBinary(parsedCode8[0]));

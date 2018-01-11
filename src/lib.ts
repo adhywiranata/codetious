@@ -5,7 +5,8 @@ const variableSelectors = require('./selectors/variable');
 const expressionSelectors = require('./selectors/expression');
 const functionSelectors = require('./selectors/function');
 
-const validators = require('./validators');
+const rootValidators = require('./validators');
+const rootEvaluators = require('./evaluators');
 
 const exposedModule: any = {};
 
@@ -24,7 +25,7 @@ const selectors: RootSelector = {
   functionSelectors,
 };
 
-const parser = (code: string) => {
+const esprimaParser = (code: string) => {
   try {
     const parsed = esprima.parseScript(code);
     return parsed.body;
@@ -39,14 +40,17 @@ Object.keys(selectors).map((selectorKey: string) => {
   Object.keys(selectors[selectorKey]).map((childSelectorKey: string) => {
     exposedModule[childSelectorKey] = (code: string, ...params: any[]) => {
       let currentChildSelector = selectors[selectorKey];
-      return currentChildSelector[childSelectorKey](parser(code), ...params);
+      return currentChildSelector[childSelectorKey](esprimaParser(code), ...params);
     }
   });
 });
 
-Object.keys(validators).map((key) => {
-  exposedModule[key] = (code: string, ...params: any[]) =>
-    validators[key](parser(code), ...params);
+Object.keys(rootValidators).map((key) => {
+  exposedModule[key] = rootValidators[key];
+});
+
+Object.keys(rootEvaluators).map((key) => {
+  exposedModule[key] = rootEvaluators[key];
 });
 
 module.exports = exposedModule;
