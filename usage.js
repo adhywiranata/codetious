@@ -83,4 +83,16 @@ const sampleCode5 = `
 
 const sampleCode6 = `function() {}`;
 
-console.log(codetious.parseDeep(sampleCode6));
+// console.log(codetious.parseDeep(sampleCode6));
+
+const sampleCode7 = `
+  var x = 5;
+
+  console.log(x);
+  console.log('yeah');
+  console.error('wogh');
+  console.log();
+`;
+
+console.log(codetious.parseDeep(sampleCode7));
+console.log(codetious.getAllConsoleOps(sampleCode7));

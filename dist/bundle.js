@@ -6835,15 +6835,30 @@ var getVariableByName = function (code, name) {
     }
     return false;
 };
+var parseExpressionArgument = function (arg) { return ({
+    type: arg.type,
+    value: arg.value
+}); };
 var parseExpression = function (ex) { return ({
-    type: ex.expression.type
+    type: ex.expression.type,
+    callee: ex.expression.callee ? {} : null,
+    arguments: ex.expression.arguments ? ex.expression.arguments.map(parseExpressionArgument) : null
+}); };
+var parseConsoleOp = function (ex) { return ({
+    type: ex.expression.callee.property.name,
+    value: ex.expression.arguments[0] ? ex.expression.arguments[0].value : null,
+    valueType: ex.expression.arguments[0] ? ex.expression.arguments[0].type : null,
+    valueIdentifierName: ex.expression.arguments[0] ? (ex.expression.arguments[0].type === 'Identifier' ? ex.expression.arguments[0].name : null) : null
 }); };
 var isExpression = function (code) { return code.constructor.name === 'ExpressionStatement'; };
 var filterExpressions = function (code) { return code.filter(isExpression); };
+var isConsoleOp = function (ex) { return ex.expression.callee.object.name = 'console'; };
+var filterConsoleOps = function (code) { return filterExpressions(code).filter(isConsoleOp); };
 var isAssignment = function (ex) { return ex.expression.type === 'AssignmentExpression'; };
 var filterAssignments = function (code) { return filterExpressions(code).filter(isAssignment); };
 var getAllExpressions = function (code) { return filterExpressions(code).map(parseExpression); };
 var getAllAssignments = function (code) { return filterAssignments(code).map(parseExpression); };
+var getAllConsoleOps = function (code) { return filterConsoleOps(code).map(parseConsoleOp); };
 var parseFunction = function (func) { return ({
     name: func.id.name,
     params: func.params.map(function (param) { return param.name; }),
@@ -6872,8 +6887,10 @@ module.exports = {
     getAllVariables: getAllVariables,
     filterExpressions: filterExpressions,
     filterAssignments: filterAssignments,
+    filterConsoleOps: filterConsoleOps,
     getAllExpressions: getAllExpressions,
     getAllAssignments: getAllAssignments,
+    getAllConsoleOps: getAllConsoleOps,
     getAllFunctions: getAllFunctions,
     getFunctionByName: getFunctionByName
 };
