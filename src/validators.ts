@@ -20,7 +20,7 @@ const getBinary = (statement: any) => {
     return parseBinary(statement);
   }
 
-  return { error: 'Not a binary Statement' };
+  return false;
 }
 
 module.exports = {
