@@ -69,8 +69,12 @@ module.exports =
 /***/ (function(module, exports, __webpack_require__) {
 
 var esprima = __webpack_require__(1);
-var selectors = __webpack_require__(2);
-var validators = __webpack_require__(8);
+var commonSelectors = __webpack_require__(2);
+var variableSelectors = __webpack_require__(8);
+var expressionSelectors = __webpack_require__(9);
+var functionSelectors = __webpack_require__(10);
+console.log(commonSelectors['parseDeep']);
+var validators = __webpack_require__(11);
 var exposedModule = {};
 var parser = function (code) {
     try {
@@ -83,13 +87,40 @@ var parser = function (code) {
         };
     }
 };
-Object.keys(selectors).map(function (key) {
+Object.keys(commonSelectors).map(function (key) {
     exposedModule[key] = function (code) {
         var params = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             params[_i - 1] = arguments[_i];
         }
-        return selectors[key].apply(selectors, [parser(code)].concat(params));
+        return commonSelectors[key].apply(commonSelectors, [parser(code)].concat(params));
+    };
+});
+Object.keys(variableSelectors).map(function (key) {
+    exposedModule[key] = function (code) {
+        var params = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            params[_i - 1] = arguments[_i];
+        }
+        return variableSelectors[key].apply(variableSelectors, [parser(code)].concat(params));
+    };
+});
+Object.keys(expressionSelectors).map(function (key) {
+    exposedModule[key] = function (code) {
+        var params = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            params[_i - 1] = arguments[_i];
+        }
+        return expressionSelectors[key].apply(expressionSelectors, [parser(code)].concat(params));
+    };
+});
+Object.keys(functionSelectors).map(function (key) {
+    exposedModule[key] = function (code) {
+        var params = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            params[_i - 1] = arguments[_i];
+        }
+        return functionSelectors[key].apply(functionSelectors, [parser(code)].concat(params));
     };
 });
 Object.keys(validators).map(function (key) {
@@ -6815,84 +6846,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 var util = __webpack_require__(3);
 var parseDeep = function (code) { return util.inspect(code, false, null); };
-var parseVariable = function (variable) { return ({
-    name: variable.declarations[0].id.name,
-    value: variable.declarations[0].init ? variable.declarations[0].init.value : undefined,
-    type: variable.declarations[0].init ? typeof variable.declarations[0].init.value : undefined,
-    kind: variable.kind
-}); };
-var isVariableDeclaration = function (code) { return code.constructor.name === 'VariableDeclaration'; };
-var filterVariables = function (code) { return code.filter(isVariableDeclaration); };
-var getAllVariables = function (code) {
-    return filterVariables(code).map(parseVariable);
-};
-var getVariableByName = function (code, name) {
-    for (var _i = 0, _a = filterVariables(code); _i < _a.length; _i++) {
-        var v = _a[_i];
-        if (v.declarations[0].id.name === name) {
-            return parseVariable(v);
-        }
-    }
-    return false;
-};
-var parseExpressionArgument = function (arg) { return ({
-    type: arg.type,
-    value: arg.value
-}); };
-var parseExpression = function (ex) { return ({
-    type: ex.expression.type,
-    callee: ex.expression.callee ? {} : null,
-    arguments: ex.expression.arguments ? ex.expression.arguments.map(parseExpressionArgument) : null
-}); };
-var parseConsoleOp = function (ex) { return ({
-    type: ex.expression.callee.property.name,
-    value: ex.expression.arguments[0] ? ex.expression.arguments[0].value : null,
-    valueType: ex.expression.arguments[0] ? ex.expression.arguments[0].type : null,
-    valueIdentifierName: ex.expression.arguments[0] ? (ex.expression.arguments[0].type === 'Identifier' ? ex.expression.arguments[0].name : null) : null
-}); };
-var isExpression = function (code) { return code.constructor.name === 'ExpressionStatement'; };
-var filterExpressions = function (code) { return code.filter(isExpression); };
-var isConsoleOp = function (ex) { return ex.expression.callee.object.name = 'console'; };
-var filterConsoleOps = function (code) { return filterExpressions(code).filter(isConsoleOp); };
-var isAssignment = function (ex) { return ex.expression.type === 'AssignmentExpression'; };
-var filterAssignments = function (code) { return filterExpressions(code).filter(isAssignment); };
-var getAllExpressions = function (code) { return filterExpressions(code).map(parseExpression); };
-var getAllAssignments = function (code) { return filterAssignments(code).map(parseExpression); };
-var getAllConsoleOps = function (code) { return filterConsoleOps(code).map(parseConsoleOp); };
-var parseFunction = function (func) { return ({
-    name: func.id.name,
-    params: func.params.map(function (param) { return param.name; }),
-    isAsync: func.async,
-    isFunctionExpression: func.expression,
-    isGenerator: func.generator,
-    hasReturnStatement: func.body.body.filter(isReturnStatement).length > 0
-}); };
-var isFunctionDeclaration = function (code) { return code.constructor.name === 'FunctionDeclaration'; };
-var filterFunctions = function (code) { return code.filter(isFunctionDeclaration); };
-var isReturnStatement = function (code) { return code.constructor.name === 'ReturnStatement'; };
-var getAllFunctions = function (code) { return filterFunctions(code).map(parseFunction); };
-var getFunctionByName = function (code, name) {
-    for (var _i = 0, _a = filterFunctions(code); _i < _a.length; _i++) {
-        var funcs = _a[_i];
-        if (parseFunction(funcs).name === name) {
-            return true;
-        }
-    }
-    return false;
-};
 module.exports = {
-    parseDeep: parseDeep,
-    filterVariables: filterVariables,
-    getVariableByName: getVariableByName,
-    getAllVariables: getAllVariables,
-    filterExpressions: filterExpressions,
-    filterAssignments: filterAssignments,
-    filterConsoleOps: filterConsoleOps,
-    getAllExpressions: getAllExpressions,
-    getAllAssignments: getAllAssignments,
-    getAllConsoleOps: getAllConsoleOps,
-    getAllFunctions: getAllFunctions,
-    getFunctionByName: getFunctionByName
+    parseDeep: parseDeep
 };
 
 
@@ -7748,6 +7703,106 @@ if (typeof Object.create === 'function') {
 
 /***/ }),
 /* 8 */
+/***/ (function(module, exports) {
+
+var parseVariable = function (variable) { return ({
+    name: variable.declarations[0].id.name,
+    value: variable.declarations[0].init ? variable.declarations[0].init.value : undefined,
+    type: variable.declarations[0].init ? typeof variable.declarations[0].init.value : undefined,
+    kind: variable.kind
+}); };
+var isVariableDeclaration = function (code) { return code.constructor.name === 'VariableDeclaration'; };
+var filterVariables = function (code) { return code.filter(isVariableDeclaration); };
+var getAllVariables = function (code) {
+    return filterVariables(code).map(parseVariable);
+};
+var getVariableByName = function (code, name) {
+    for (var _i = 0, _a = filterVariables(code); _i < _a.length; _i++) {
+        var v = _a[_i];
+        if (v.declarations[0].id.name === name) {
+            return parseVariable(v);
+        }
+    }
+    return false;
+};
+module.exports = {
+    filterVariables: filterVariables,
+    getVariableByName: getVariableByName,
+    getAllVariables: getAllVariables
+};
+
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports) {
+
+var parseExpressionArgument = function (arg) { return ({
+    type: arg.type,
+    value: arg.value
+}); };
+var parseExpression = function (ex) { return ({
+    type: ex.expression.type,
+    callee: ex.expression.callee ? {} : null,
+    arguments: ex.expression.arguments ? ex.expression.arguments.map(parseExpressionArgument) : null
+}); };
+var parseConsoleOp = function (ex) { return ({
+    type: ex.expression.callee.property.name,
+    value: ex.expression.arguments[0] ? ex.expression.arguments[0].value : null,
+    valueType: ex.expression.arguments[0] ? ex.expression.arguments[0].type : null,
+    valueIdentifierName: ex.expression.arguments[0] ? (ex.expression.arguments[0].type === 'Identifier' ? ex.expression.arguments[0].name : null) : null
+}); };
+var isExpression = function (code) { return code.constructor.name === 'ExpressionStatement'; };
+var filterExpressions = function (code) { return code.filter(isExpression); };
+var isConsoleOp = function (ex) { return ex.expression.callee.object.name = 'console'; };
+var filterConsoleOps = function (code) { return filterExpressions(code).filter(isConsoleOp); };
+var isAssignment = function (ex) { return ex.expression.type === 'AssignmentExpression'; };
+var filterAssignments = function (code) { return filterExpressions(code).filter(isAssignment); };
+var getAllExpressions = function (code) { return filterExpressions(code).map(parseExpression); };
+var getAllAssignments = function (code) { return filterAssignments(code).map(parseExpression); };
+var getAllConsoleOps = function (code) { return filterConsoleOps(code).map(parseConsoleOp); };
+module.exports = {
+    filterExpressions: filterExpressions,
+    filterAssignments: filterAssignments,
+    filterConsoleOps: filterConsoleOps,
+    getAllExpressions: getAllExpressions,
+    getAllAssignments: getAllAssignments,
+    getAllConsoleOps: getAllConsoleOps
+};
+
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports) {
+
+var parseFunction = function (func) { return ({
+    name: func.id.name,
+    params: func.params.map(function (param) { return param.name; }),
+    isAsync: func.async,
+    isFunctionExpression: func.expression,
+    isGenerator: func.generator,
+    hasReturnStatement: func.body.body.filter(isReturnStatement).length > 0
+}); };
+var isFunctionDeclaration = function (code) { return code.constructor.name === 'FunctionDeclaration'; };
+var filterFunctions = function (code) { return code.filter(isFunctionDeclaration); };
+var isReturnStatement = function (code) { return code.constructor.name === 'ReturnStatement'; };
+var getAllFunctions = function (code) { return filterFunctions(code).map(parseFunction); };
+var getFunctionByName = function (code, name) {
+    for (var _i = 0, _a = filterFunctions(code); _i < _a.length; _i++) {
+        var funcs = _a[_i];
+        if (parseFunction(funcs).name === name) {
+            return true;
+        }
+    }
+    return false;
+};
+module.exports = {
+    getAllFunctions: getAllFunctions,
+    getFunctionByName: getFunctionByName
+};
+
+
+/***/ }),
+/* 11 */
 /***/ (function(module, exports) {
 
 module.exports = {};

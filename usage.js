@@ -91,6 +91,7 @@ const sampleCode7 = `
   console.log(x);
   console.log('yeah');
   console.error('wogh');
+  console.log(5 + 1);
   console.log();
 `;
 

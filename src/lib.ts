@@ -1,6 +1,12 @@
 const esprima = require('esprima');
 
-const selectors = require('./selectors');
+const commonSelectors = require('./selectors/common');
+const variableSelectors = require('./selectors/variable');
+const expressionSelectors = require('./selectors/expression');
+const functionSelectors = require('./selectors/function');
+
+console.log(commonSelectors['parseDeep']);
+
 const validators = require('./validators');
 
 const exposedModule: any = {};
@@ -16,9 +22,24 @@ const parser = (code: string) => {
   }
 } 
 
-Object.keys(selectors).map((key) => {
+Object.keys(commonSelectors).map((key) => {
   exposedModule[key] = (code: string, ...params: any[]) =>
-    selectors[key](parser(code), ...params);
+  commonSelectors[key](parser(code), ...params);
+});
+
+Object.keys(variableSelectors).map((key) => {
+  exposedModule[key] = (code: string, ...params: any[]) =>
+  variableSelectors[key](parser(code), ...params);
+});
+
+Object.keys(expressionSelectors).map((key) => {
+  exposedModule[key] = (code: string, ...params: any[]) =>
+  expressionSelectors[key](parser(code), ...params);
+});
+
+Object.keys(functionSelectors).map((key) => {
+  exposedModule[key] = (code: string, ...params: any[]) =>
+  functionSelectors[key](parser(code), ...params);
 });
 
 Object.keys(validators).map((key) => {
