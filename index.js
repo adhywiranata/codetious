@@ -85,7 +85,7 @@ var getBinary = function (statement) {
     if (isValidBinary(statement)) {
         return parseBinary(statement);
     }
-    return { error: 'Not a binary Statement' };
+    return false;
 };
 module.exports = {
     isValidBinary: isValidBinary,
@@ -7821,11 +7821,11 @@ module.exports = functionSelector;
 
 var validator = __webpack_require__(0);
 var evaluateBinary = function (statement) {
-    console.log(statement);
-    if (validator.isValidBinary(statement)) {
-        console.log(validator.isValidBinary(statement));
+    var res = validator.getBinary(statement);
+    if (res) {
+        return eval('' + res.leftValue + res.operator + res.rightValue);
     }
-    console.log('not a valid binary!');
+    return 'not a valid binary!';
 };
 module.exports = {
     evaluateBinary: evaluateBinary

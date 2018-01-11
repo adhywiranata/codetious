@@ -107,3 +107,4 @@ const sampleCode8 = `
 const parsedCode8 = codetious.parseDeep(sampleCode8);
 // console.log(parsedCode8[0].expression);
 console.log(codetious.getBinary(parsedCode8[0]));
+console.log(codetious.evaluateBinary(parsedCode8[0]));
