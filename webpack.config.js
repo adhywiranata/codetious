@@ -5,7 +5,7 @@ module.exports = {
   entry: './src/lib.ts',
   output: {
     path: path.resolve(__dirname),
-    filename: 'index.js',
+    filename: 'dist/codetious.js',
     library: 'codetious',
     libraryTarget: 'commonjs2'
   },

@@ -1,4 +1,4 @@
-const codetious = require('..');
+const codetious = require('../dist/codetious');
 
 const sampleCode1 = `
 let num = 5;

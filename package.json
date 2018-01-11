@@ -1,7 +1,7 @@
 {
   "name": "codetious",
   "version": "0.2.0",
-  "main": "index.js",
+  "main": "dist/codetious.js",
   "license": "MIT",
   "scripts": {
     "build": "webpack"
