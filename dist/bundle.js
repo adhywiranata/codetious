@@ -72,13 +72,24 @@ var esprima = __webpack_require__(1);
 var selectors = __webpack_require__(2);
 var validators = __webpack_require__(8);
 var exposedModule = {};
+var parser = function (code) {
+    try {
+        var parsed = esprima.parseScript(code);
+        return parsed.body;
+    }
+    catch (e) {
+        return {
+            error: String(e)
+        };
+    }
+};
 Object.keys(selectors).map(function (key) {
     exposedModule[key] = function (code) {
         var params = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             params[_i - 1] = arguments[_i];
         }
-        return selectors[key].apply(selectors, [esprima.parseScript(code).body].concat(params));
+        return selectors[key].apply(selectors, [parser(code)].concat(params));
     };
 });
 Object.keys(validators).map(function (key) {
@@ -87,7 +98,7 @@ Object.keys(validators).map(function (key) {
         for (var _i = 1; _i < arguments.length; _i++) {
             params[_i - 1] = arguments[_i];
         }
-        return validators[key].apply(validators, [esprima.parseScript(code).body].concat(params));
+        return validators[key].apply(validators, [parser(code)].concat(params));
     };
 });
 module.exports = exposedModule;

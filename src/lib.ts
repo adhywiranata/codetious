@@ -5,14 +5,25 @@ const validators = require('./validators');
 
 const exposedModule: any = {};
 
+const parser = (code: string) => {
+  try {
+    const parsed = esprima.parseScript(code);
+    return parsed.body;
+  } catch (e) {
+    return {
+      error: String(e),
+    };
+  }
+} 
+
 Object.keys(selectors).map((key) => {
   exposedModule[key] = (code: string, ...params: any[]) =>
-    selectors[key](esprima.parseScript(code).body, ...params);
+    selectors[key](parser(code), ...params);
 });
 
 Object.keys(validators).map((key) => {
   exposedModule[key] = (code: string, ...params: any[]) =>
-    validators[key](esprima.parseScript(code).body, ...params);
+    validators[key](parser(code), ...params);
 });
 
 module.exports = exposedModule;
