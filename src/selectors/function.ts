@@ -26,7 +26,9 @@ const getFunctionByName = (code: any, name: string) => {
   return false;
 }
 
-module.exports = {
+const functionSelector: { [key: string]: any } = {
   getAllFunctions,
   getFunctionByName,
 };
+
+module.exports = functionSelector;

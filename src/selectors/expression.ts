@@ -47,7 +47,7 @@ const getAllAssignments = (code: any) => filterAssignments(code).map(parseExpres
 // get all console operations (log, error, warn)
 const getAllConsoleOps = (code: any) => filterConsoleOps(code).map(parseConsoleOp);
 
-module.exports = {
+const expressionSelector: { [key: string]: any } = {
   filterExpressions,
   filterAssignments,
   filterConsoleOps,
@@ -55,3 +55,5 @@ module.exports = {
   getAllAssignments,
   getAllConsoleOps,
 };
+
+module.exports = expressionSelector;

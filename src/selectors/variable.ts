@@ -25,8 +25,10 @@ const getVariableByName = (code: any, name: string) => {
   return false;
 };
 
-module.exports = {
+const variableSelector: { [key: string]: any } = {
   filterVariables,
   getVariableByName,
   getAllVariables,
 };
+
+module.exports = variableSelector;

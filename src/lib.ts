@@ -5,11 +5,24 @@ const variableSelectors = require('./selectors/variable');
 const expressionSelectors = require('./selectors/expression');
 const functionSelectors = require('./selectors/function');
 
-console.log(commonSelectors['parseDeep']);
-
 const validators = require('./validators');
 
 const exposedModule: any = {};
+
+interface RootSelector {
+  commonSelectors: string;
+  variableSelectors: string;
+  expressionSelectors: string;
+  functionSelectors: string;
+  [key: string]: string;
+}
+
+const selectors: RootSelector = {
+  commonSelectors,
+  variableSelectors,
+  expressionSelectors,
+  functionSelectors,
+};
 
 const parser = (code: string) => {
   try {
@@ -20,26 +33,15 @@ const parser = (code: string) => {
       error: String(e),
     };
   }
-} 
+}
 
-Object.keys(commonSelectors).map((key) => {
-  exposedModule[key] = (code: string, ...params: any[]) =>
-  commonSelectors[key](parser(code), ...params);
-});
-
-Object.keys(variableSelectors).map((key) => {
-  exposedModule[key] = (code: string, ...params: any[]) =>
-  variableSelectors[key](parser(code), ...params);
-});
-
-Object.keys(expressionSelectors).map((key) => {
-  exposedModule[key] = (code: string, ...params: any[]) =>
-  expressionSelectors[key](parser(code), ...params);
-});
-
-Object.keys(functionSelectors).map((key) => {
-  exposedModule[key] = (code: string, ...params: any[]) =>
-  functionSelectors[key](parser(code), ...params);
+Object.keys(selectors).map((selectorKey: string) => {
+  Object.keys(selectors[selectorKey]).map((childSelectorKey: string) => {
+    exposedModule[childSelectorKey] = (code: string, ...params: any[]) => {
+      let currentChildSelector = selectors[selectorKey];
+      return currentChildSelector[childSelectorKey](parser(code), ...params);
+    }
+  });
 });
 
 Object.keys(validators).map((key) => {

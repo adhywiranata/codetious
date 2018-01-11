@@ -73,9 +73,14 @@ var commonSelectors = __webpack_require__(2);
 var variableSelectors = __webpack_require__(8);
 var expressionSelectors = __webpack_require__(9);
 var functionSelectors = __webpack_require__(10);
-console.log(commonSelectors['parseDeep']);
 var validators = __webpack_require__(11);
 var exposedModule = {};
+var selectors = {
+    commonSelectors: commonSelectors,
+    variableSelectors: variableSelectors,
+    expressionSelectors: expressionSelectors,
+    functionSelectors: functionSelectors
+};
 var parser = function (code) {
     try {
         var parsed = esprima.parseScript(code);
@@ -87,41 +92,17 @@ var parser = function (code) {
         };
     }
 };
-Object.keys(commonSelectors).map(function (key) {
-    exposedModule[key] = function (code) {
-        var params = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            params[_i - 1] = arguments[_i];
-        }
-        return commonSelectors[key].apply(commonSelectors, [parser(code)].concat(params));
-    };
-});
-Object.keys(variableSelectors).map(function (key) {
-    exposedModule[key] = function (code) {
-        var params = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            params[_i - 1] = arguments[_i];
-        }
-        return variableSelectors[key].apply(variableSelectors, [parser(code)].concat(params));
-    };
-});
-Object.keys(expressionSelectors).map(function (key) {
-    exposedModule[key] = function (code) {
-        var params = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            params[_i - 1] = arguments[_i];
-        }
-        return expressionSelectors[key].apply(expressionSelectors, [parser(code)].concat(params));
-    };
-});
-Object.keys(functionSelectors).map(function (key) {
-    exposedModule[key] = function (code) {
-        var params = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            params[_i - 1] = arguments[_i];
-        }
-        return functionSelectors[key].apply(functionSelectors, [parser(code)].concat(params));
-    };
+Object.keys(selectors).map(function (selectorKey) {
+    Object.keys(selectors[selectorKey]).map(function (childSelectorKey) {
+        exposedModule[childSelectorKey] = function (code) {
+            var params = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                params[_i - 1] = arguments[_i];
+            }
+            var currentChildSelector = selectors[selectorKey];
+            return currentChildSelector[childSelectorKey].apply(currentChildSelector, [parser(code)].concat(params));
+        };
+    });
 });
 Object.keys(validators).map(function (key) {
     exposedModule[key] = function (code) {
@@ -6846,9 +6827,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 var util = __webpack_require__(3);
 var parseDeep = function (code) { return util.inspect(code, false, null); };
-module.exports = {
+var commonSelector = {
     parseDeep: parseDeep
 };
+module.exports = commonSelector;
 
 
 /***/ }),
@@ -7725,11 +7707,12 @@ var getVariableByName = function (code, name) {
     }
     return false;
 };
-module.exports = {
+var variableSelector = {
     filterVariables: filterVariables,
     getVariableByName: getVariableByName,
     getAllVariables: getAllVariables
 };
+module.exports = variableSelector;
 
 
 /***/ }),
@@ -7760,7 +7743,7 @@ var filterAssignments = function (code) { return filterExpressions(code).filter(
 var getAllExpressions = function (code) { return filterExpressions(code).map(parseExpression); };
 var getAllAssignments = function (code) { return filterAssignments(code).map(parseExpression); };
 var getAllConsoleOps = function (code) { return filterConsoleOps(code).map(parseConsoleOp); };
-module.exports = {
+var expressionSelector = {
     filterExpressions: filterExpressions,
     filterAssignments: filterAssignments,
     filterConsoleOps: filterConsoleOps,
@@ -7768,6 +7751,7 @@ module.exports = {
     getAllAssignments: getAllAssignments,
     getAllConsoleOps: getAllConsoleOps
 };
+module.exports = expressionSelector;
 
 
 /***/ }),
@@ -7795,10 +7779,11 @@ var getFunctionByName = function (code, name) {
     }
     return false;
 };
-module.exports = {
+var functionSelector = {
     getAllFunctions: getAllFunctions,
     getFunctionByName: getFunctionByName
 };
+module.exports = functionSelector;
 
 
 /***/ }),
