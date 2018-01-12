@@ -1,6 +1,6 @@
 import functionParser from '../parsers/function';
 
-const isFunctionDeclaration = (code: any) => code.constructor.name === 'FunctionDeclaration';
+const isFunctionDeclaration = (code: any) => code.type === 'FunctionDeclaration';
 const filterFunctions = (code: any) => code.filter(isFunctionDeclaration);
 
 // get all valid functions declaration
