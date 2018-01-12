@@ -2,7 +2,7 @@ const { CheckerPlugin } = require('awesome-typescript-loader');
 const path = require('path');
 
 module.exports = {
-  entry: './src/lib.ts',
+  entry: './src/index.ts',
   output: {
     path: path.resolve(__dirname),
     filename: 'dist/codetious.js',

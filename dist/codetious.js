@@ -155,20 +155,40 @@ exports["default"] = cursors;
 "use strict";
 
 exports.__esModule = true;
-var esprima = __webpack_require__(4);
-var common_1 = __webpack_require__(5);
-var variable_1 = __webpack_require__(11);
-var expression_1 = __webpack_require__(13);
-var function_1 = __webpack_require__(14);
-var evaluators_1 = __webpack_require__(16);
+var lib_1 = __webpack_require__(4);
+var selectors_1 = __webpack_require__(6);
+var evaluators_1 = __webpack_require__(18);
 var cursors_1 = __webpack_require__(2);
 var exposedModule = {};
-var selectors = {
-    commonSelectors: common_1["default"],
-    variableSelectors: variable_1["default"],
-    expressionSelectors: expression_1["default"],
-    functionSelectors: function_1["default"]
+var injectSelectorModule = function (selectorKey) {
+    Object.keys(selectors_1["default"][selectorKey]).map(function (childSelectorKey) {
+        exposedModule[childSelectorKey] = function (code) {
+            var params = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                params[_i - 1] = arguments[_i];
+            }
+            var currentChildSelector = selectors_1["default"][selectorKey];
+            var parsedCode = lib_1["default"].esprimaParser(code);
+            return currentChildSelector[childSelectorKey].apply(currentChildSelector, [parsedCode].concat(params));
+        };
+    });
 };
+var injectCursorsModule = function (key) { return exposedModule[key] = cursors_1["default"][key]; };
+var injectEvaluatorsModule = function (key) { return exposedModule[key] = evaluators_1["default"][key]; };
+Object.keys(selectors_1["default"]).forEach(injectSelectorModule);
+Object.keys(cursors_1["default"]).forEach(injectCursorsModule);
+Object.keys(evaluators_1["default"]).forEach(injectEvaluatorsModule);
+module.exports = exposedModule;
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+exports.__esModule = true;
+var esprima = __webpack_require__(5);
 var esprimaParser = function (code) {
     try {
         var parsed = esprima.parseScript(code);
@@ -180,29 +200,14 @@ var esprimaParser = function (code) {
         };
     }
 };
-Object.keys(selectors).map(function (selectorKey) {
-    Object.keys(selectors[selectorKey]).map(function (childSelectorKey) {
-        exposedModule[childSelectorKey] = function (code) {
-            var params = [];
-            for (var _i = 1; _i < arguments.length; _i++) {
-                params[_i - 1] = arguments[_i];
-            }
-            var currentChildSelector = selectors[selectorKey];
-            return currentChildSelector[childSelectorKey].apply(currentChildSelector, [esprimaParser(code)].concat(params));
-        };
-    });
-});
-Object.keys(cursors_1["default"]).map(function (key) {
-    exposedModule[key] = cursors_1["default"][key];
-});
-Object.keys(evaluators_1["default"]).map(function (key) {
-    exposedModule[key] = evaluators_1["default"][key];
-});
-module.exports = exposedModule;
+var lib = {
+    esprimaParser: esprimaParser
+};
+exports["default"] = lib;
 
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -6907,13 +6912,33 @@ return /******/ (function(modules) { // webpackBootstrap
 ;
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 exports.__esModule = true;
-var util = __webpack_require__(6);
+var common_1 = __webpack_require__(7);
+var variable_1 = __webpack_require__(13);
+var expression_1 = __webpack_require__(15);
+var function_1 = __webpack_require__(16);
+var selectors = {
+    commonSelectors: common_1["default"],
+    variableSelectors: variable_1["default"],
+    expressionSelectors: expression_1["default"],
+    functionSelectors: function_1["default"]
+};
+exports["default"] = selectors;
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+exports.__esModule = true;
+var util = __webpack_require__(8);
 var parseDeep = function (code) { return code; };
 var parseDeepToString = function (code) { return util.inspect(code, false, null); };
 var commonSelector = {
@@ -6924,7 +6949,7 @@ exports["default"] = commonSelector;
 
 
 /***/ }),
-/* 6 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {// Copyright Joyent, Inc. and other Node contributors.
@@ -7452,7 +7477,7 @@ function isPrimitive(arg) {
 }
 exports.isPrimitive = isPrimitive;
 
-exports.isBuffer = __webpack_require__(9);
+exports.isBuffer = __webpack_require__(11);
 
 function objectToString(o) {
   return Object.prototype.toString.call(o);
@@ -7496,7 +7521,7 @@ exports.log = function() {
  *     prototype.
  * @param {function} superCtor Constructor function to inherit prototype from.
  */
-exports.inherits = __webpack_require__(10);
+exports.inherits = __webpack_require__(12);
 
 exports._extend = function(origin, add) {
   // Don't do anything if add isn't an object
@@ -7514,10 +7539,10 @@ function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7), __webpack_require__(8)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9), __webpack_require__(10)))
 
 /***/ }),
-/* 7 */
+/* 9 */
 /***/ (function(module, exports) {
 
 var g;
@@ -7544,7 +7569,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 8 */
+/* 10 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -7734,7 +7759,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 9 */
+/* 11 */
 /***/ (function(module, exports) {
 
 module.exports = function isBuffer(arg) {
@@ -7745,7 +7770,7 @@ module.exports = function isBuffer(arg) {
 }
 
 /***/ }),
-/* 10 */
+/* 12 */
 /***/ (function(module, exports) {
 
 if (typeof Object.create === 'function') {
@@ -7774,13 +7799,13 @@ if (typeof Object.create === 'function') {
 
 
 /***/ }),
-/* 11 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 exports.__esModule = true;
-var variable_1 = __webpack_require__(12);
+var variable_1 = __webpack_require__(14);
 var isVariableDeclaration = function (code) { return code.constructor.name === 'VariableDeclaration'; };
 var filterVariables = function (code) { return code.filter(isVariableDeclaration); };
 var getAllVariables = function (code) {
@@ -7804,7 +7829,7 @@ exports["default"] = variableSelector;
 
 
 /***/ }),
-/* 12 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7823,7 +7848,7 @@ exports["default"] = parsers;
 
 
 /***/ }),
-/* 13 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7849,13 +7874,13 @@ exports["default"] = expressionSelector;
 
 
 /***/ }),
-/* 14 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 exports.__esModule = true;
-var function_1 = __webpack_require__(15);
+var function_1 = __webpack_require__(17);
 var isFunctionDeclaration = function (code) { return code.constructor.name === 'FunctionDeclaration'; };
 var filterFunctions = function (code) { return code.filter(isFunctionDeclaration); };
 var getAllFunctions = function (code) { return filterFunctions(code).map(function_1["default"].parseFunction); };
@@ -7876,7 +7901,7 @@ exports["default"] = functionSelector;
 
 
 /***/ }),
-/* 15 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7898,7 +7923,7 @@ exports["default"] = parsers;
 
 
 /***/ }),
-/* 16 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
