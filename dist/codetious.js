@@ -61,18 +61,55 @@ module.exports =
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 1);
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
+"use strict";
+
+exports.__esModule = true;
+var parseExpressionArgument = function (arg) { return ({
+    type: arg.type,
+    value: arg.value
+}); };
+var parseExpression = function (ex) { return ({
+    type: ex.expression.type,
+    callee: ex.expression.callee ? {} : null,
+    arguments: ex.expression.arguments ? ex.expression.arguments.map(parseExpressionArgument) : null
+}); };
 var parseBinary = function (statement) { return ({
     operator: statement.expression.operator,
     leftValue: statement.expression.left.value || null,
     rightValue: statement.expression.right.value || null
 }); };
+var parseConsoleOp = function (ex) { return ({
+    type: ex.expression.callee.property.name,
+    value: ex.expression.arguments[0] ? ex.expression.arguments[0].value : null,
+    valueType: ex.expression.arguments[0] ? ex.expression.arguments[0].type : null,
+    valueIdentifierName: ex.expression.arguments[0] ? (ex.expression.arguments[0].type === 'Identifier' ? ex.expression.arguments[0].name : null) : null
+}); };
+var parsers = {
+    parseExpressionArgument: parseExpressionArgument,
+    parseExpression: parseExpression,
+    parseConsoleOp: parseConsoleOp,
+    parseBinary: parseBinary
+};
+exports["default"] = parsers;
+
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+exports.__esModule = true;
+var isExpression = function (code) { return code.constructor.name === 'ExpressionStatement'; };
+var isConsoleOp = function (ex) { return ex.expression.callee.object.name = 'console'; };
+var isAssignment = function (ex) { return ex.expression.type === 'AssignmentExpression'; };
 var isValidBinary = function (statement) {
     if (statement.type === 'ExpressionStatement') {
         if (statement.expression.type === 'BinaryExpression') {
@@ -81,35 +118,56 @@ var isValidBinary = function (statement) {
     }
     return false;
 };
-var getBinary = function (statement) {
-    if (isValidBinary(statement)) {
-        return parseBinary(statement);
-    }
-    return false;
-};
-module.exports = {
+var validators = {
     isValidBinary: isValidBinary,
-    getBinary: getBinary
+    isExpression: isExpression,
+    isConsoleOp: isConsoleOp,
+    isAssignment: isAssignment
 };
+exports["default"] = validators;
 
 
 /***/ }),
-/* 1 */
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var esprima = __webpack_require__(2);
-var commonSelectors = __webpack_require__(3);
-var variableSelectors = __webpack_require__(9);
-var expressionSelectors = __webpack_require__(11);
-var functionSelectors = __webpack_require__(13);
-var rootValidators = __webpack_require__(0);
-var rootEvaluators = __webpack_require__(15);
+"use strict";
+
+exports.__esModule = true;
+var expression_1 = __webpack_require__(1);
+var expression_2 = __webpack_require__(0);
+var getBinary = function (statement) {
+    if (expression_1["default"].isValidBinary(statement)) {
+        return expression_2["default"].parseBinary(statement);
+    }
+    return false;
+};
+var cursors = {
+    getBinary: getBinary
+};
+exports["default"] = cursors;
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+exports.__esModule = true;
+var esprima = __webpack_require__(4);
+var common_1 = __webpack_require__(5);
+var variable_1 = __webpack_require__(11);
+var expression_1 = __webpack_require__(13);
+var function_1 = __webpack_require__(14);
+var evaluators_1 = __webpack_require__(16);
+var cursors_1 = __webpack_require__(2);
 var exposedModule = {};
 var selectors = {
-    commonSelectors: commonSelectors,
-    variableSelectors: variableSelectors,
-    expressionSelectors: expressionSelectors,
-    functionSelectors: functionSelectors
+    commonSelectors: common_1["default"],
+    variableSelectors: variable_1["default"],
+    expressionSelectors: expression_1["default"],
+    functionSelectors: function_1["default"]
 };
 var esprimaParser = function (code) {
     try {
@@ -134,17 +192,17 @@ Object.keys(selectors).map(function (selectorKey) {
         };
     });
 });
-Object.keys(rootValidators).map(function (key) {
-    exposedModule[key] = rootValidators[key];
+Object.keys(cursors_1["default"]).map(function (key) {
+    exposedModule[key] = cursors_1["default"][key];
 });
-Object.keys(rootEvaluators).map(function (key) {
-    exposedModule[key] = rootEvaluators[key];
+Object.keys(evaluators_1["default"]).map(function (key) {
+    exposedModule[key] = evaluators_1["default"][key];
 });
 module.exports = exposedModule;
 
 
 /***/ }),
-/* 2 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -6849,21 +6907,24 @@ return /******/ (function(modules) { // webpackBootstrap
 ;
 
 /***/ }),
-/* 3 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var util = __webpack_require__(4);
+"use strict";
+
+exports.__esModule = true;
+var util = __webpack_require__(6);
 var parseDeep = function (code) { return code; };
 var parseDeepToString = function (code) { return util.inspect(code, false, null); };
 var commonSelector = {
     parseDeep: parseDeep,
     parseDeepToString: parseDeepToString
 };
-module.exports = commonSelector;
+exports["default"] = commonSelector;
 
 
 /***/ }),
-/* 4 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {// Copyright Joyent, Inc. and other Node contributors.
@@ -7391,7 +7452,7 @@ function isPrimitive(arg) {
 }
 exports.isPrimitive = isPrimitive;
 
-exports.isBuffer = __webpack_require__(7);
+exports.isBuffer = __webpack_require__(9);
 
 function objectToString(o) {
   return Object.prototype.toString.call(o);
@@ -7435,7 +7496,7 @@ exports.log = function() {
  *     prototype.
  * @param {function} superCtor Constructor function to inherit prototype from.
  */
-exports.inherits = __webpack_require__(8);
+exports.inherits = __webpack_require__(10);
 
 exports._extend = function(origin, add) {
   // Don't do anything if add isn't an object
@@ -7453,10 +7514,10 @@ function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5), __webpack_require__(6)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7), __webpack_require__(8)))
 
 /***/ }),
-/* 5 */
+/* 7 */
 /***/ (function(module, exports) {
 
 var g;
@@ -7483,7 +7544,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 6 */
+/* 8 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -7673,7 +7734,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 7 */
+/* 9 */
 /***/ (function(module, exports) {
 
 module.exports = function isBuffer(arg) {
@@ -7684,7 +7745,7 @@ module.exports = function isBuffer(arg) {
 }
 
 /***/ }),
-/* 8 */
+/* 10 */
 /***/ (function(module, exports) {
 
 if (typeof Object.create === 'function') {
@@ -7713,20 +7774,23 @@ if (typeof Object.create === 'function') {
 
 
 /***/ }),
-/* 9 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var variableParser = __webpack_require__(10);
+"use strict";
+
+exports.__esModule = true;
+var variable_1 = __webpack_require__(12);
 var isVariableDeclaration = function (code) { return code.constructor.name === 'VariableDeclaration'; };
 var filterVariables = function (code) { return code.filter(isVariableDeclaration); };
 var getAllVariables = function (code) {
-    return filterVariables(code).map(variableParser.parseVariable);
+    return filterVariables(code).map(variable_1["default"].parseVariable);
 };
 var getVariableByName = function (code, name) {
     for (var _i = 0, _a = filterVariables(code); _i < _a.length; _i++) {
         var v = _a[_i];
         if (v.declarations[0].id.name === name) {
-            return variableParser.parseVariable(v);
+            return variable_1["default"].parseVariable(v);
         }
     }
     return false;
@@ -7736,38 +7800,43 @@ var variableSelector = {
     getVariableByName: getVariableByName,
     getAllVariables: getAllVariables
 };
-module.exports = variableSelector;
+exports["default"] = variableSelector;
 
 
 /***/ }),
-/* 10 */
-/***/ (function(module, exports) {
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
 
+"use strict";
+
+exports.__esModule = true;
 var parseVariable = function (variable) { return ({
     name: variable.declarations[0].id.name,
     value: variable.declarations[0].init ? variable.declarations[0].init.value : undefined,
     type: variable.declarations[0].init ? typeof variable.declarations[0].init.value : undefined,
     kind: variable.kind
 }); };
-module.exports = {
+var parsers = {
     parseVariable: parseVariable
 };
+exports["default"] = parsers;
 
 
 /***/ }),
-/* 11 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var expressionParser = __webpack_require__(12);
-var isExpression = function (code) { return code.constructor.name === 'ExpressionStatement'; };
-var filterExpressions = function (code) { return code.filter(isExpression); };
-var isConsoleOp = function (ex) { return ex.expression.callee.object.name = 'console'; };
-var filterConsoleOps = function (code) { return filterExpressions(code).filter(isConsoleOp); };
-var isAssignment = function (ex) { return ex.expression.type === 'AssignmentExpression'; };
-var filterAssignments = function (code) { return filterExpressions(code).filter(isAssignment); };
-var getAllExpressions = function (code) { return filterExpressions(code).map(expressionParser.parseExpression); };
-var getAllAssignments = function (code) { return filterAssignments(code).map(expressionParser.parseExpression); };
-var getAllConsoleOps = function (code) { return filterConsoleOps(code).map(expressionParser.parseConsoleOp); };
+"use strict";
+
+exports.__esModule = true;
+var expression_1 = __webpack_require__(0);
+var expression_2 = __webpack_require__(1);
+var filterExpressions = function (code) { return code.filter(expression_2["default"].isExpression); };
+var filterConsoleOps = function (code) { return filterExpressions(code).filter(expression_2["default"].isConsoleOp); };
+var filterAssignments = function (code) { return filterExpressions(code).filter(expression_2["default"].isAssignment); };
+var getAllExpressions = function (code) { return filterExpressions(code).map(expression_1["default"].parseExpression); };
+var getAllAssignments = function (code) { return filterAssignments(code).map(expression_1["default"].parseExpression); };
+var getAllConsoleOps = function (code) { return filterConsoleOps(code).map(expression_1["default"].parseConsoleOp); };
 var expressionSelector = {
     filterExpressions: filterExpressions,
     filterAssignments: filterAssignments,
@@ -7776,47 +7845,24 @@ var expressionSelector = {
     getAllAssignments: getAllAssignments,
     getAllConsoleOps: getAllConsoleOps
 };
-module.exports = expressionSelector;
+exports["default"] = expressionSelector;
 
 
 /***/ }),
-/* 12 */
-/***/ (function(module, exports) {
-
-var parseExpressionArgument = function (arg) { return ({
-    type: arg.type,
-    value: arg.value
-}); };
-var parseExpression = function (ex) { return ({
-    type: ex.expression.type,
-    callee: ex.expression.callee ? {} : null,
-    arguments: ex.expression.arguments ? ex.expression.arguments.map(parseExpressionArgument) : null
-}); };
-var parseConsoleOp = function (ex) { return ({
-    type: ex.expression.callee.property.name,
-    value: ex.expression.arguments[0] ? ex.expression.arguments[0].value : null,
-    valueType: ex.expression.arguments[0] ? ex.expression.arguments[0].type : null,
-    valueIdentifierName: ex.expression.arguments[0] ? (ex.expression.arguments[0].type === 'Identifier' ? ex.expression.arguments[0].name : null) : null
-}); };
-module.exports = {
-    parseExpressionArgument: parseExpressionArgument,
-    parseExpression: parseExpression,
-    parseConsoleOp: parseConsoleOp
-};
-
-
-/***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var functionParser = __webpack_require__(14);
+"use strict";
+
+exports.__esModule = true;
+var function_1 = __webpack_require__(15);
 var isFunctionDeclaration = function (code) { return code.constructor.name === 'FunctionDeclaration'; };
 var filterFunctions = function (code) { return code.filter(isFunctionDeclaration); };
-var getAllFunctions = function (code) { return filterFunctions(code).map(functionParser.parseFunction); };
+var getAllFunctions = function (code) { return filterFunctions(code).map(function_1["default"].parseFunction); };
 var getFunctionByName = function (code, name) {
     for (var _i = 0, _a = filterFunctions(code); _i < _a.length; _i++) {
         var funcs = _a[_i];
-        if (functionParser.parseFunction(funcs).name === name) {
+        if (function_1["default"].parseFunction(funcs).name === name) {
             return true;
         }
     }
@@ -7826,13 +7872,16 @@ var functionSelector = {
     getAllFunctions: getAllFunctions,
     getFunctionByName: getFunctionByName
 };
-module.exports = functionSelector;
+exports["default"] = functionSelector;
 
 
 /***/ }),
-/* 14 */
-/***/ (function(module, exports) {
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
 
+"use strict";
+
+exports.__esModule = true;
 var isReturnStatement = function (code) { return code.constructor.name === 'ReturnStatement'; };
 var parseFunction = function (func) { return ({
     name: func.id.name,
@@ -7842,26 +7891,31 @@ var parseFunction = function (func) { return ({
     isGenerator: func.generator,
     hasReturnStatement: func.body.body.filter(isReturnStatement).length > 0
 }); };
-module.exports = {
+var parsers = {
     parseFunction: parseFunction
 };
+exports["default"] = parsers;
 
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var validator = __webpack_require__(0);
+"use strict";
+
+exports.__esModule = true;
+var cursors_1 = __webpack_require__(2);
 var evaluateBinary = function (statement) {
-    var res = validator.getBinary(statement);
+    var res = cursors_1["default"].getBinary(statement);
     if (res) {
         return eval('' + res.leftValue + res.operator + res.rightValue);
     }
     return 'not a valid binary!';
 };
-module.exports = {
+var evaluators = {
     evaluateBinary: evaluateBinary
 };
+exports["default"] = evaluators;
 
 
 /***/ })

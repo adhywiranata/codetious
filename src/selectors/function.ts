@@ -1,4 +1,4 @@
-const functionParser = require('../parsers/function');
+import functionParser from '../parsers/function';
 
 const isFunctionDeclaration = (code: any) => code.constructor.name === 'FunctionDeclaration';
 const filterFunctions = (code: any) => code.filter(isFunctionDeclaration);
@@ -22,4 +22,4 @@ const functionSelector: { [key: string]: any } = {
   getFunctionByName,
 };
 
-module.exports = functionSelector;
+export default functionSelector;

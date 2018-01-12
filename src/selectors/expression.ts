@@ -1,4 +1,5 @@
-const expressionParser = require('../parsers/expression');
+import expressionParser from '../parsers/expression';
+import expressionValidator from '../validators/expression';
 
 // get all expressions
 /*
@@ -9,14 +10,11 @@ expression types:
 */
 
 // expressions types filters
-const isExpression = (code: any) => code.constructor.name === 'ExpressionStatement';
-const filterExpressions = (code: any) => code.filter(isExpression);
+const filterExpressions = (code: any) => code.filter(expressionValidator.isExpression);
 
-const isConsoleOp = (ex: any) => ex.expression.callee.object.name = 'console';
-const filterConsoleOps = (code: any) => filterExpressions(code).filter(isConsoleOp);
+const filterConsoleOps = (code: any) => filterExpressions(code).filter(expressionValidator.isConsoleOp);
 
-const isAssignment = (ex: any) => ex.expression.type === 'AssignmentExpression';
-const filterAssignments = (code: any) => filterExpressions(code).filter(isAssignment);
+const filterAssignments = (code: any) => filterExpressions(code).filter(expressionValidator.isAssignment);
 
 // get all expressions with any type
 const getAllExpressions = (code: any) => filterExpressions(code).map(expressionParser.parseExpression);
@@ -36,4 +34,4 @@ const expressionSelector: { [key: string]: any } = {
   getAllConsoleOps,
 };
 
-module.exports = expressionSelector;
+export default expressionSelector;

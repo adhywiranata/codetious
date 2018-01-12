@@ -1,24 +1,16 @@
-const esprima = require('esprima');
+import * as esprima from 'esprima';
 
-const commonSelectors = require('./selectors/common');
-const variableSelectors = require('./selectors/variable');
-const expressionSelectors = require('./selectors/expression');
-const functionSelectors = require('./selectors/function');
+import commonSelectors from './selectors/common';
+import variableSelectors from './selectors/variable';
+import expressionSelectors from './selectors/expression';
+import functionSelectors from './selectors/function';
 
-const rootValidators = require('./validators');
-const rootEvaluators = require('./evaluators');
+import rootEvaluators from './evaluators';
+import rootCursors from './cursors';
 
 const exposedModule: any = {};
 
-interface RootSelector {
-  commonSelectors: string;
-  variableSelectors: string;
-  expressionSelectors: string;
-  functionSelectors: string;
-  [key: string]: string;
-}
-
-const selectors: RootSelector = {
+const selectors: any = {
   commonSelectors,
   variableSelectors,
   expressionSelectors,
@@ -45,11 +37,11 @@ Object.keys(selectors).map((selectorKey: string) => {
   });
 });
 
-Object.keys(rootValidators).map((key) => {
-  exposedModule[key] = rootValidators[key];
+Object.keys(rootCursors).map((key: string) => {
+  exposedModule[key] = rootCursors[key];
 });
 
-Object.keys(rootEvaluators).map((key) => {
+Object.keys(rootEvaluators).map((key: string) => {
   exposedModule[key] = rootEvaluators[key];
 });
 

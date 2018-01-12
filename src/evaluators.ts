@@ -1,9 +1,9 @@
-const validator = require('./validators');
+import cursors from './cursors';
 
 // Evaluate Binary Expressions
 
 const evaluateBinary = (statement: any) => {
-  const res = validator.getBinary(statement);
+  const res = cursors.getBinary(statement);
   if(res) {
     return eval('' + res.leftValue + res.operator + res.rightValue);
   }
@@ -11,6 +11,8 @@ const evaluateBinary = (statement: any) => {
   return 'not a valid binary!';
 }
 
-module.exports = {
+const evaluators: { [key: string]: any } = {
   evaluateBinary,
 };
+
+export default evaluators;

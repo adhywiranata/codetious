@@ -10,6 +10,8 @@ const parseFunction = (func: any) => ({
   hasReturnStatement: func.body.body.filter(isReturnStatement).length > 0,
 });
 
-module.exports = {
+const parsers: { [key: string]: any } = {
   parseFunction,
-}
+};
+
+export default parsers;

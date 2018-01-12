@@ -1,4 +1,4 @@
-const variableParser = require('../parsers/variable');
+import variableParser from '../parsers/variable';
 
 // return all variable declarations
 const isVariableDeclaration = (code: any) => code.constructor.name === 'VariableDeclaration';
@@ -25,4 +25,4 @@ const variableSelector: { [key: string]: any } = {
   getAllVariables,
 };
 
-module.exports = variableSelector;
+export default variableSelector;

@@ -6,6 +6,8 @@ const parseVariable = (variable: any) => ({
   kind: variable.kind, // var, let, or const
 });
 
-module.exports = {
+const parsers: { [key: string]: any } = {
   parseVariable,
 };
+
+export default parsers;
