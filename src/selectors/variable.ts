@@ -1,7 +1,7 @@
 import variableParser from '../parsers/variable';
 
 // return all variable declarations
-const isVariableDeclaration = (code: any) => code.constructor.name === 'VariableDeclaration';
+const isVariableDeclaration = (code: any) => code.type === 'VariableDeclaration';
 const filterVariables = (code: any) => code.filter(isVariableDeclaration);
 
 // get all valid variables (var, let, const)

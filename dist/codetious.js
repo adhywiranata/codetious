@@ -7806,7 +7806,7 @@ if (typeof Object.create === 'function') {
 
 exports.__esModule = true;
 var variable_1 = __webpack_require__(14);
-var isVariableDeclaration = function (code) { return code.constructor.name === 'VariableDeclaration'; };
+var isVariableDeclaration = function (code) { return code.type === 'VariableDeclaration'; };
 var filterVariables = function (code) { return code.filter(isVariableDeclaration); };
 var getAllVariables = function (code) {
     return filterVariables(code).map(variable_1["default"].parseVariable);
