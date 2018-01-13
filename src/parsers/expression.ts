@@ -15,6 +15,27 @@ const parseExpression = (ex: any) => ({
   arguments: ex.expression.arguments ? ex.expression.arguments.map(parseExpressionArgument) : null,
 });
 
+// parse assignment expression
+const parseAssignment = (statement: any) => {
+  let value = undefined;
+  const { expression } = statement;
+
+  if (expression.right.type === 'Literal') {
+    value = expression.right.value;
+  }
+
+  if (expression.right.type === 'BinaryExpression') {
+    value = evaluators.evaluateBinary(parseBinary(expression.right));
+  }
+
+  return {
+    type: expression.type,
+    identifier: expression.left.name,
+    operator: expression.operator,
+    value,
+  };
+};
+
 // parse statement into binary expression object
 const parseBinary = (statement: any) => {
   if (statement.type === 'ExpressionStatement') {
@@ -64,10 +85,11 @@ const parseConsoleOp = (ex: any) => {
 };
 
 const parsers: { [key: string]: any } = {
-  parseExpressionArgument,
-  parseExpression,
-  parseConsoleOp,
+  parseAssignment,
   parseBinary,
+  parseConsoleOp,
+  parseExpression,
+  parseExpressionArgument,
 };
 
 export default parsers;

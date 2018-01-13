@@ -15,16 +15,16 @@ var x;
 const sampleCode2 = `
 let num = 5;
 
-console.log(num);
+// console.log(num);
 num = 8;
-num += 8;
-5 + 7;
-num = 1 + 3;
-jon();
-7;
+// num += 8;
+// 5 + 7;
+// num = 1 + 3;
+// jon();
+// 7;
 `;
 
-// console.log(codetious.parseDeep(sampleCode2));
+// console.log(codetious.parseDeepToString(sampleCode2));
 // console.log(codetious.getAllAssignments(sampleCode2));
 
 const sampleCode3 = `
@@ -111,4 +111,11 @@ const sampleCode8 = `
 `;
 
 // console.log(codetious.parseDeep(sampleCode8));
-console.log(codetious.getAllConsoleOps(sampleCode8));
+// console.log(codetious.getAllConsoleOps(sampleCode8));
+
+const sampleCode9 = `
+  var num;
+  num = 5 + 2;
+`;
+
+console.log(codetious.getAllAssignments(sampleCode9));

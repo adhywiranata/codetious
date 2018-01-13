@@ -20,7 +20,7 @@ const filterAssignments = (code: any) => filterExpressions(code).filter(expressi
 const getAllExpressions = (code: any) => filterExpressions(code).map(expressionParser.parseExpression);
 
 // get all assignment only expressions
-const getAllAssignments = (code: any) => filterAssignments(code).map(expressionParser.parseExpression);
+const getAllAssignments = (code: any) => filterAssignments(code).map(expressionParser.parseAssignment);
 
 // get all console operations (log, error, warn)
 const getAllConsoleOps = (code: any) => filterConsoleOps(code).map(expressionParser.parseConsoleOp);
