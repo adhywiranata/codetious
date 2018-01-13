@@ -1,4 +1,4 @@
-const codetious = require('../src');
+import codetious from '../src';
 
 const sampleCode1 = `
 let num = 5;
@@ -118,4 +118,4 @@ const sampleCode9 = `
   num = 5 + 2;
 `;
 
-console.log(codetious.getAllAssignments(sampleCode9));
+// console.log(codetious.getAllAssignments(sampleCode9));

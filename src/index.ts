@@ -25,4 +25,4 @@ Object.keys(rootSelectors).forEach(injectSelectorModule);
 Object.keys(rootCursors).forEach(injectCursorsModule);
 Object.keys(rootEvaluators).forEach(injectEvaluatorsModule);
 
-module.exports = exposedModule;
+export default exposedModule;

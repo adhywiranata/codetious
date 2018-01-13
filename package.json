@@ -6,15 +6,20 @@
   "scripts": {
     "build": "webpack",
     "test": "yarn build && node test",
-    "dev-test": "ts-node test/test.ts"
+    "dev-test": "ts-node test/test.ts",
+    "devtest": "mocha -r ts-node/register tests/**/*.spec.ts --verbose"
   },
   "dependencies": {
     "esprima": "^4.0.0"
   },
   "devDependencies": {
+    "@types/chai": "^4.1.0",
     "@types/esprima": "^4.0.1",
+    "@types/mocha": "^2.2.46",
     "@types/node": "^8.5.7",
     "awesome-typescript-loader": "^3.4.1",
+    "chai": "^4.1.2",
+    "mocha": "^4.1.0",
     "typescript": "^2.6.2"
   }
 }
