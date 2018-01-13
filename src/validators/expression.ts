@@ -10,7 +10,7 @@ const isValidBinary = (statement: any) => {
   }
 
   return false;
-}
+};
 
 const validators: { [key: string]: any } = {
   isValidBinary,

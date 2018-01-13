@@ -7,7 +7,7 @@ const getBinary = (statement: any) => {
   }
 
   return false;
-}
+};
 
 const cursors: { [key: string]: any } = {
   getBinary,

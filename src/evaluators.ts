@@ -31,7 +31,7 @@ const evaluateBinary = (statement: any): any => {
   }
 
   return 'not a valid binary!';
-}
+};
 
 const evaluators: { [key: string]: any } = {
   evaluateBinary,

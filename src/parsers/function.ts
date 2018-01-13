@@ -1,4 +1,4 @@
-const isReturnStatement = (code: any) => code.constructor.name === 'ReturnStatement';
+const isReturnStatement = (code: any) => code.type === 'ReturnStatement';
 
 // parse easy to read function object
 const parseFunction = (func: any) => ({

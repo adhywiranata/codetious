@@ -15,7 +15,7 @@ const getFunctionByName = (code: any, name: string) => {
   }
 
   return false;
-}
+};
 
 const functionSelector: { [key: string]: any } = {
   getAllFunctions,
