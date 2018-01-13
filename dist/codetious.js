@@ -82,8 +82,10 @@ var parseExpression = function (ex) { return ({
 }); };
 var parseBinary = function (statement) { return ({
     operator: statement.expression.operator,
-    leftValue: statement.expression.left.value || null,
-    rightValue: statement.expression.right.value || null
+    leftType: statement.expression.left.type,
+    rightType: statement.expression.right.type,
+    leftValue: statement.expression.left.value || statement.expression.left,
+    rightValue: statement.expression.right.value || statement.expression.right
 }); };
 var parseConsoleOp = function (ex) { return ({
     type: ex.expression.callee.property.name,
@@ -7881,7 +7883,7 @@ exports["default"] = expressionSelector;
 
 exports.__esModule = true;
 var function_1 = __webpack_require__(17);
-var isFunctionDeclaration = function (code) { return code.constructor.name === 'FunctionDeclaration'; };
+var isFunctionDeclaration = function (code) { return code.type === 'FunctionDeclaration'; };
 var filterFunctions = function (code) { return code.filter(isFunctionDeclaration); };
 var getAllFunctions = function (code) { return filterFunctions(code).map(function_1["default"].parseFunction); };
 var getFunctionByName = function (code, name) {
@@ -7930,6 +7932,9 @@ exports["default"] = parsers;
 
 exports.__esModule = true;
 var cursors_1 = __webpack_require__(2);
+var evaluateLiteralBinary = function (statement) {
+    var res = cursors_1["default"].getBinary(statement);
+};
 var evaluateBinary = function (statement) {
     var res = cursors_1["default"].getBinary(statement);
     if (res) {

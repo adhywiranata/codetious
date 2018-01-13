@@ -1,4 +1,4 @@
-const codetious = require('../dist/codetious');
+const codetious = require('../src');
 
 const sampleCode1 = `
 let num = 5;
@@ -86,6 +86,20 @@ const sampleCode6 = `function() {}`;
 // console.log(codetious.parseDeep(sampleCode6));
 
 const sampleCode7 = `
+  1 + 2
+  1 + 2 + 3 + 4
+  1 * 2 - 3 + 6
+`
+
+// console.log(codetious.parseDeep(sampleCode7));
+
+// const parsedCode7 = codetious.parseDeep(sampleCode7);
+// const parsedBinaries7 = parsedCode7.map(codetious.getBinary);
+// console.log(parsedBinaries7);
+// const evaluatedBinaries7 = parsedBinaries7.map(codetious.evaluateBinary);
+// console.log(evaluatedBinaries7);
+
+const sampleCode8 = `
   var x = 5;
 
   console.log(x);
@@ -95,24 +109,5 @@ const sampleCode7 = `
   console.log();
 `;
 
-// console.log(codetious.parseDeep(sampleCode7));
-// console.log(codetious.getAllConsoleOps(sampleCode7));
-
-const sampleCode8 = `
-  1 + 2
-  // 1 + 2 - 3 + 1
-  // 1 + 2 - 3 * 4 / 5
-  // (((1 + 2) - 3) * 4) / 5
-`
-
 // console.log(codetious.parseDeep(sampleCode8));
-
-const parsedCode8 = codetious.parseDeepToString(sampleCode8);
-console.log(parsedCode8);
-
-// TODO need to parse left hand side of binary recursively!
-
-console.log(codetious.getBinary(parsedCode8[0]));
-console.log(codetious.evaluateBinary(parsedCode8[0]));
-// console.log(codetious.getBinary(parsedCode8[1]));
-// console.log(codetious.evaluateBinary(parsedCode8[1]));
+console.log(codetious.getAllConsoleOps(sampleCode8));

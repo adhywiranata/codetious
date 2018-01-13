@@ -4,7 +4,9 @@
   "main": "dist/codetious.js",
   "license": "MIT",
   "scripts": {
-    "build": "webpack"
+    "build": "webpack",
+    "test": "yarn build && node test",
+    "dev-test": "ts-node test/test.ts"
   },
   "dependencies": {
     "esprima": "^4.0.0"

@@ -13,11 +13,28 @@ const parseExpression = (ex: any) => ({
 });
 
 // parse statement into binary expression object
-const parseBinary = (statement: any) => ({
-  operator: statement.expression.operator,
-  leftValue: statement.expression.left.value || null,
-  rightValue: statement.expression.right.value || null,
-});
+const parseBinary = (statement: any) => {
+  
+  if (statement.type === 'ExpressionStatement') {
+    return {
+      operator: statement.expression.operator,
+      leftType: statement.expression.left.type, // should be between Literal or BinaryExpression
+      rightType: statement.expression.right.type,
+      leftValue: statement.expression.left.value || statement.expression.left,
+      rightValue: statement.expression.right.value || statement.expression.right,
+    };
+  }
+
+  if(statement.type === 'BinaryExpression') {
+    return {
+      operator: statement.operator,
+      leftType: statement.left.type, // should be between Literal or BinaryExpression
+      rightType: statement.right.type,
+      leftValue: statement.left.value || statement.left,
+      rightValue: statement.right.value || statement.right,
+    };
+  }
+};
 
 // parse console operations
 const parseConsoleOp = (ex: any) => ({
