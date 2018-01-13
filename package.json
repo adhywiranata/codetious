@@ -5,9 +5,7 @@
   "license": "MIT",
   "scripts": {
     "build": "webpack",
-    "test": "yarn build && node test",
-    "dev-test": "ts-node test/test.ts",
-    "devtest": "mocha -r ts-node/register tests/**/*.spec.ts --verbose"
+    "test": "mocha -r ts-node/register tests/**/*.spec.ts --verbose"
   },
   "dependencies": {
     "esprima": "^4.0.0"
