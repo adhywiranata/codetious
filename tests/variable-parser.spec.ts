@@ -162,6 +162,21 @@ describe('Variable Parser', () => {
     expect(actualOutput).to.deep.equal(expectedOutput);
   });
 
+  it('should parse variable declaration with object literal and array as a prop value', () => {
+    const code = `let myArr = { anArr: [1, 2, 3] };`;
+    const actualOutput = parseFirstLineVariable(code);
+    const expectedOutput = {
+      name: 'myArr',
+      value: { anArr: [1, 2, 3] },
+      initialValue: { anArr: [1, 2, 3] },
+      type: 'object',
+      initialType: 'object',
+      kind: 'let',
+    };
+
+    expect(actualOutput).to.deep.equal(expectedOutput);
+  });
+
   it('should parse const variable declaration', () => {
     const code = `const myVar = 5;`;
     const actualOutput = parseFirstLineVariable(code);

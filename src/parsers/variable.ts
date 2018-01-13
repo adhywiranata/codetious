@@ -14,18 +14,40 @@ const parseArrayElement = (elem: any) => {
 };
 
 const parseObjectProperty = (property: any) => {
-  // only for literal
+  let propValue;
+
+  if (property.value.type === 'Literal') {
+    propValue = property.value.value;
+  }
+
+  if (property.value.type === 'ArrayExpression') {
+    const arrayElements = property.value.elements;
+    const parsedArray = arrayElements.map(parseArrayElement);
+    propValue = parsedArray;
+  }
+
+  if (property.value.type === 'ObjectExpression') {
+    let parsedObject = {};
+    const objectProperties = property.value.properties;
+    const parsedProperties: any = objectProperties.map(parseObjectProperty);
+    parsedProperties.forEach((prop: any) => {
+      parsedObject[prop.key] = prop.value;
+    });
+
+    propValue = parsedObject;
+  }
+
   return {
     key: property.key.name,
-    value: property.value.value,
+    value: propValue,
   };
 };
 
 // parse easy to read variable object
 const parseVariable = (variable: any) => {
   const { declarations } = variable;
-  let initialValue = undefined;
-  let initialType = undefined;
+  let initialValue;
+  let initialType;
 
   if (declarations[0].init) {
     if(declarations[0].init.type === 'Literal') {
