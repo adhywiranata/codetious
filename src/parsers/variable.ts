@@ -1,10 +1,41 @@
+const parseArrayElement = (elem: any) => {
+  if(elem.type === 'Literal') {
+    return elem.value;
+  }
+
+  // TODO handle non literal array element
+  return {};
+};
+
 // parse easy to read variable object
-const parseVariable = (variable: any) => ({
-  name: variable.declarations[0].id.name,
-  value: variable.declarations[0].init ? variable.declarations[0].init.value : undefined,
-  type: variable.declarations[0].init ? typeof variable.declarations[0].init.value : undefined,
-  kind: variable.kind, // var, let, or const
-});
+const parseVariable = (variable: any) => {
+  const { declarations } = variable;
+  let initialValue = undefined;
+  let initialType = undefined;
+
+  if (declarations[0].init) {
+    if(declarations[0].init.type === 'Literal') {
+      initialValue = declarations[0].init.value;
+      initialType = typeof initialValue;
+    }
+
+    if(declarations[0].init.type === 'ArrayExpression') {
+      const arrayElements = declarations[0].init.elements;
+      const parsedArray = arrayElements.map(parseArrayElement);
+      initialValue = parsedArray;
+      initialType = 'array';
+    }
+  }
+
+  return {
+    name: declarations[0].id.name,
+    value: initialValue,
+    initialValue,
+    type: initialType,
+    initialType: initialType,
+    kind: variable.kind, // var, let, or const
+  };
+};
 
 const parsers: { [key: string]: any } = {
   parseVariable,
