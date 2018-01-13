@@ -71,6 +71,7 @@ module.exports =
 "use strict";
 
 exports.__esModule = true;
+var evaluators_1 = __webpack_require__(1);
 var parseExpressionArgument = function (arg) { return ({
     type: arg.type,
     value: arg.value
@@ -80,30 +81,122 @@ var parseExpression = function (ex) { return ({
     callee: ex.expression.callee ? {} : null,
     arguments: ex.expression.arguments ? ex.expression.arguments.map(parseExpressionArgument) : null
 }); };
-var parseBinary = function (statement) { return ({
-    operator: statement.expression.operator,
-    leftType: statement.expression.left.type,
-    rightType: statement.expression.right.type,
-    leftValue: statement.expression.left.value || statement.expression.left,
-    rightValue: statement.expression.right.value || statement.expression.right
-}); };
-var parseConsoleOp = function (ex) { return ({
-    type: ex.expression.callee.property.name,
-    value: ex.expression.arguments[0] ? ex.expression.arguments[0].value : null,
-    valueType: ex.expression.arguments[0] ? ex.expression.arguments[0].type : null,
-    valueIdentifierName: ex.expression.arguments[0] ? (ex.expression.arguments[0].type === 'Identifier' ? ex.expression.arguments[0].name : null) : null
-}); };
+var parseAssignment = function (statement) {
+    var value = undefined;
+    var expression = statement.expression;
+    if (expression.right.type === 'Literal') {
+        value = expression.right.value;
+    }
+    if (expression.right.type === 'BinaryExpression') {
+        value = evaluators_1["default"].evaluateBinary(parseBinary(expression.right));
+    }
+    return {
+        type: expression.type,
+        identifier: expression.left.name,
+        operator: expression.operator,
+        value: value
+    };
+};
+var parseBinary = function (statement) {
+    if (statement.type === 'ExpressionStatement') {
+        return {
+            operator: statement.expression.operator,
+            leftType: statement.expression.left.type,
+            rightType: statement.expression.right.type,
+            leftValue: statement.expression.left.value || statement.expression.left,
+            rightValue: statement.expression.right.value || statement.expression.right
+        };
+    }
+    if (statement.type === 'BinaryExpression') {
+        return {
+            operator: statement.operator,
+            leftType: statement.left.type,
+            rightType: statement.right.type,
+            leftValue: statement.left.value || statement.left,
+            rightValue: statement.right.value || statement.right
+        };
+    }
+};
+var parseConsoleOp = function (ex) {
+    var expression = ex.expression;
+    var type = expression.callee.property.name;
+    var value = null;
+    var valueType = null;
+    var valueIdentifierName = null;
+    if (expression.arguments[0]) {
+        value = expression.arguments[0].value;
+        valueType = expression.arguments[0].type;
+        if (expression.arguments[0].type) {
+            valueIdentifierName = expression.arguments[0].type;
+        }
+        if (valueType === 'BinaryExpression') {
+            value = evaluators_1["default"].evaluateBinary(parseBinary(expression.arguments[0]));
+        }
+    }
+    return {
+        type: type,
+        value: value,
+        valueType: valueType,
+        valueIdentifierName: valueIdentifierName
+    };
+};
 var parsers = {
-    parseExpressionArgument: parseExpressionArgument,
-    parseExpression: parseExpression,
+    parseAssignment: parseAssignment,
+    parseBinary: parseBinary,
     parseConsoleOp: parseConsoleOp,
-    parseBinary: parseBinary
+    parseExpression: parseExpression,
+    parseExpressionArgument: parseExpressionArgument
 };
 exports["default"] = parsers;
 
 
 /***/ }),
 /* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
+exports.__esModule = true;
+var expression_1 = __webpack_require__(0);
+var evaluateBinary = function (statement) {
+    var res = __assign({}, statement);
+    if (res) {
+        var resLeft = void 0;
+        var resRight = void 0;
+        if (res.leftType === 'Literal') {
+            resLeft = res.leftValue;
+        }
+        if (res.rightType === 'Literal') {
+            resRight = res.rightValue;
+        }
+        if (res.leftType === 'BinaryExpression') {
+            var parsedLeftBinary = expression_1["default"].parseBinary(res.leftValue);
+            resLeft = evaluateBinary(parsedLeftBinary);
+        }
+        if (res.rightType === 'BinaryExpression') {
+            var parsedRightBinary = expression_1["default"].parseBinary(res.rightValue);
+            resRight = evaluateBinary(parsedRightBinary);
+        }
+        return eval('' + resLeft + res.operator + resRight);
+    }
+    return 'not a valid binary!';
+};
+var evaluators = {
+    evaluateBinary: evaluateBinary
+};
+exports["default"] = evaluators;
+
+
+/***/ }),
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -130,27 +223,6 @@ exports["default"] = validators;
 
 
 /***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-exports.__esModule = true;
-var expression_1 = __webpack_require__(1);
-var expression_2 = __webpack_require__(0);
-var getBinary = function (statement) {
-    if (expression_1["default"].isValidBinary(statement)) {
-        return expression_2["default"].parseBinary(statement);
-    }
-    return false;
-};
-var cursors = {
-    getBinary: getBinary
-};
-exports["default"] = cursors;
-
-
-/***/ }),
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -159,8 +231,8 @@ exports["default"] = cursors;
 exports.__esModule = true;
 var lib_1 = __webpack_require__(4);
 var selectors_1 = __webpack_require__(6);
-var evaluators_1 = __webpack_require__(18);
-var cursors_1 = __webpack_require__(2);
+var evaluators_1 = __webpack_require__(1);
+var cursors_1 = __webpack_require__(18);
 var exposedModule = {};
 var injectSelectorModule = function (selectorKey) {
     Object.keys(selectors_1["default"][selectorKey]).map(function (childSelectorKey) {
@@ -180,7 +252,7 @@ var injectEvaluatorsModule = function (key) { return exposedModule[key] = evalua
 Object.keys(selectors_1["default"]).forEach(injectSelectorModule);
 Object.keys(cursors_1["default"]).forEach(injectCursorsModule);
 Object.keys(evaluators_1["default"]).forEach(injectEvaluatorsModule);
-module.exports = exposedModule;
+exports["default"] = exposedModule;
 
 
 /***/ }),
@@ -6943,11 +7015,11 @@ exports.__esModule = true;
 var util = __webpack_require__(8);
 var parseDeep = function (code) { return code; };
 var parseDeepToString = function (code) { return util.inspect(code, false, null); };
-var commonSelector = {
+var commonParser = {
     parseDeep: parseDeep,
     parseDeepToString: parseDeepToString
 };
-exports["default"] = commonSelector;
+exports["default"] = commonParser;
 
 
 /***/ }),
@@ -7837,12 +7909,84 @@ exports["default"] = variableSelector;
 "use strict";
 
 exports.__esModule = true;
-var parseVariable = function (variable) { return ({
-    name: variable.declarations[0].id.name,
-    value: variable.declarations[0].init ? variable.declarations[0].init.value : undefined,
-    type: variable.declarations[0].init ? typeof variable.declarations[0].init.value : undefined,
-    kind: variable.kind
-}); };
+var parseArrayElement = function (elem) {
+    if (elem.type === 'Literal') {
+        return elem.value;
+    }
+    if (elem.type === 'ArrayExpression') {
+        var arrayElements = elem.elements;
+        var parsedArray = arrayElements.map(parseArrayElement);
+        return parsedArray;
+    }
+    if (elem.type === 'ObjectExpression') {
+        var parsedObject_1 = {};
+        var objectProperties = elem.properties;
+        var parsedProperties = objectProperties.map(parseObjectProperty);
+        parsedProperties.forEach(function (prop) {
+            parsedObject_1[prop.key] = prop.value;
+        });
+        return parsedObject_1;
+    }
+};
+var parseObjectProperty = function (property) {
+    var propValue;
+    if (property.value.type === 'Literal') {
+        propValue = property.value.value;
+    }
+    if (property.value.type === 'ArrayExpression') {
+        var arrayElements = property.value.elements;
+        var parsedArray = arrayElements.map(parseArrayElement);
+        propValue = parsedArray;
+    }
+    if (property.value.type === 'ObjectExpression') {
+        var parsedObject_2 = {};
+        var objectProperties = property.value.properties;
+        var parsedProperties = objectProperties.map(parseObjectProperty);
+        parsedProperties.forEach(function (prop) {
+            parsedObject_2[prop.key] = prop.value;
+        });
+        propValue = parsedObject_2;
+    }
+    return {
+        key: property.key.name,
+        value: propValue
+    };
+};
+var parseVariable = function (variable) {
+    var declarations = variable.declarations;
+    var initialValue;
+    var initialType;
+    if (declarations[0].init) {
+        if (declarations[0].init.type === 'Literal') {
+            initialValue = declarations[0].init.value;
+            initialType = typeof initialValue;
+        }
+        if (declarations[0].init.type === 'ArrayExpression') {
+            var arrayElements = declarations[0].init.elements;
+            var parsedArray = arrayElements.map(parseArrayElement);
+            initialValue = parsedArray;
+            initialType = 'array';
+        }
+        if (declarations[0].init.type === 'ObjectExpression') {
+            var parsedObject_3 = {};
+            var objectProperties = variable.declarations[0].init.properties;
+            var parsedProperties = objectProperties.map(parseObjectProperty);
+            parsedProperties.forEach(function (prop) {
+                parsedObject_3[prop.key] = prop.value;
+            });
+            initialValue = parsedObject_3;
+            initialType = 'object';
+        }
+    }
+    return {
+        name: declarations[0].id.name,
+        value: initialValue,
+        initialValue: initialValue,
+        type: initialType,
+        initialType: initialType,
+        kind: variable.kind
+    };
+};
 var parsers = {
     parseVariable: parseVariable
 };
@@ -7857,12 +8001,12 @@ exports["default"] = parsers;
 
 exports.__esModule = true;
 var expression_1 = __webpack_require__(0);
-var expression_2 = __webpack_require__(1);
+var expression_2 = __webpack_require__(2);
 var filterExpressions = function (code) { return code.filter(expression_2["default"].isExpression); };
 var filterConsoleOps = function (code) { return filterExpressions(code).filter(expression_2["default"].isConsoleOp); };
 var filterAssignments = function (code) { return filterExpressions(code).filter(expression_2["default"].isAssignment); };
 var getAllExpressions = function (code) { return filterExpressions(code).map(expression_1["default"].parseExpression); };
-var getAllAssignments = function (code) { return filterAssignments(code).map(expression_1["default"].parseExpression); };
+var getAllAssignments = function (code) { return filterAssignments(code).map(expression_1["default"].parseAssignment); };
 var getAllConsoleOps = function (code) { return filterConsoleOps(code).map(expression_1["default"].parseConsoleOp); };
 var expressionSelector = {
     filterExpressions: filterExpressions,
@@ -7909,7 +8053,7 @@ exports["default"] = functionSelector;
 "use strict";
 
 exports.__esModule = true;
-var isReturnStatement = function (code) { return code.constructor.name === 'ReturnStatement'; };
+var isReturnStatement = function (code) { return code.type === 'ReturnStatement'; };
 var parseFunction = function (func) { return ({
     name: func.id.name,
     params: func.params.map(function (param) { return param.name; }),
@@ -7931,21 +8075,18 @@ exports["default"] = parsers;
 "use strict";
 
 exports.__esModule = true;
-var cursors_1 = __webpack_require__(2);
-var evaluateLiteralBinary = function (statement) {
-    var res = cursors_1["default"].getBinary(statement);
-};
-var evaluateBinary = function (statement) {
-    var res = cursors_1["default"].getBinary(statement);
-    if (res) {
-        return eval('' + res.leftValue + res.operator + res.rightValue);
+var expression_1 = __webpack_require__(2);
+var expression_2 = __webpack_require__(0);
+var getBinary = function (statement) {
+    if (expression_1["default"].isValidBinary(statement)) {
+        return expression_2["default"].parseBinary(statement);
     }
-    return 'not a valid binary!';
+    return false;
 };
-var evaluators = {
-    evaluateBinary: evaluateBinary
+var cursors = {
+    getBinary: getBinary
 };
-exports["default"] = evaluators;
+exports["default"] = cursors;
 
 
 /***/ })
