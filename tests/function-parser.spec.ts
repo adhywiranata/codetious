@@ -70,7 +70,15 @@ describe('Function Parser', () => {
     expect(actualOutput).to.deep.equal(expectedOutput);
   });
 
-  // TODO tests for async functions
-  // TODO tests for function expression
-  // TODO tests for generator functions
+  xit('should parse and identify function expression', () => {
+    // TODO tests for function expression
+  });
+
+  xit('should parse and identify async function', () => {
+    // TODO tests for async functions 
+  });
+
+  xit('should parse and identify generator function', () => {
+    // TODO tests for generator functions
+  });
 });
