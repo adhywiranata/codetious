@@ -3,7 +3,13 @@ const parseArrayElement = (elem: any) => {
     return elem.value;
   }
 
-  // TODO handle non literal array element
+  if(elem.type === 'ArrayExpression') {
+    const arrayElements = elem.elements;
+    const parsedArray = arrayElements.map(parseArrayElement);
+    return parsedArray;
+  }
+
+  // TODO handle object element
   return {};
 };
 
