@@ -30,4 +30,47 @@ describe('Function Parser', () => {
 
     expect(actualOutput).to.deep.equal(expectedOutput);
   });
+
+  it('should parse basic function declaration with return statement', () => {
+    const code = `
+    function myFunc() {
+      console.log('this is a function');
+      return 'anything';
+    }
+    `;
+    const actualOutput = parseFirstLineFunction(code);
+    const expectedOutput = {
+      name: 'myFunc',
+      params: [],
+      isAsync: false,
+      isFunctionExpression: false,
+      isGenerator: false,
+      hasReturnStatement: true,
+    };
+
+    expect(actualOutput).to.deep.equal(expectedOutput);
+  });
+
+  it('should parse function with parameters declaration', () => {
+    const code = `
+    function myFunc(name) {
+      console.log('this is a function');
+    }
+    `;
+    const actualOutput = parseFirstLineFunction(code);
+    const expectedOutput = {
+      name: 'myFunc',
+      params: ['name'],
+      isAsync: false,
+      isFunctionExpression: false,
+      isGenerator: false,
+      hasReturnStatement: false,
+    };
+
+    expect(actualOutput).to.deep.equal(expectedOutput);
+  });
+
+  // TODO tests for async functions
+  // TODO tests for function expression
+  // TODO tests for generator functions
 });
