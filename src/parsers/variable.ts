@@ -9,8 +9,15 @@ const parseArrayElement = (elem: any) => {
     return parsedArray;
   }
 
-  // TODO handle object element
-  return false;
+  if(elem.type === 'ObjectExpression') {
+    let parsedObject = {};
+    const objectProperties = elem.properties;
+    const parsedProperties: any = objectProperties.map(parseObjectProperty);
+    parsedProperties.forEach((prop: any) => {
+      parsedObject[prop.key] = prop.value;
+    });
+    return parsedObject;
+  }
 };
 
 const parseObjectProperty = (property: any) => {

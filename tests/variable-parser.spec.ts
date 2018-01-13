@@ -177,6 +177,36 @@ describe('Variable Parser', () => {
     expect(actualOutput).to.deep.equal(expectedOutput);
   });
 
+  it('should parse variable declaration with nested object literal as initial value', () => {
+    const code = `let myArr = { anObject: { name: 'john', age: 23 } };`;
+    const actualOutput = parseFirstLineVariable(code);
+    const expectedOutput = {
+      name: 'myArr',
+      value: { anObject: { name: 'john', age: 23 } },
+      initialValue: { anObject: { name: 'john', age: 23 } },
+      type: 'object',
+      initialType: 'object',
+      kind: 'let',
+    };
+
+    expect(actualOutput).to.deep.equal(expectedOutput);
+  });
+
+  it('should parse variable declaration with nested object literal with mixed types as initial value', () => {
+    const code = `let myArr = { anObject: { name: 'john', age: 23 }, anArray: [1, 5, 4], arrOfObj: [{ username: 'mikey' }] };`;
+    const actualOutput = parseFirstLineVariable(code);
+    const expectedOutput = {
+      name: 'myArr',
+      value: { anObject: { name: 'john', age: 23 }, anArray: [1, 5, 4], arrOfObj: [{ username: 'mikey' }] },
+      initialValue: { anObject: { name: 'john', age: 23 }, anArray: [1, 5, 4], arrOfObj: [{ username: 'mikey' }] },
+      type: 'object',
+      initialType: 'object',
+      kind: 'let',
+    };
+
+    expect(actualOutput).to.deep.equal(expectedOutput);
+  });
+
   it('should parse const variable declaration', () => {
     const code = `const myVar = 5;`;
     const actualOutput = parseFirstLineVariable(code);
