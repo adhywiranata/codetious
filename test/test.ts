@@ -106,6 +106,7 @@ const sampleCode8 = `
   console.log('yeah');
   console.error('wogh');
   console.log(5 + 1);
+  console.log(5 + 1 + 2 - 6 + 8);
   console.log();
 `;
 

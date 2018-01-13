@@ -1,3 +1,6 @@
+import evaluators from '../evaluators';
+import cursors from '../cursors';
+
 // parse expression arguments
 const parseExpressionArgument = (arg : any) => ({
   type: arg.type,
@@ -14,7 +17,6 @@ const parseExpression = (ex: any) => ({
 
 // parse statement into binary expression object
 const parseBinary = (statement: any) => {
-  
   if (statement.type === 'ExpressionStatement') {
     return {
       operator: statement.expression.operator,
@@ -37,12 +39,29 @@ const parseBinary = (statement: any) => {
 };
 
 // parse console operations
-const parseConsoleOp = (ex: any) => ({
-  type: ex.expression.callee.property.name,
-  value: ex.expression.arguments[0] ? ex.expression.arguments[0].value : null,
-  valueType: ex.expression.arguments[0] ? ex.expression.arguments[0].type : null,
-  valueIdentifierName: ex.expression.arguments[0] ? (ex.expression.arguments[0].type === 'Identifier' ? ex.expression.arguments[0].name : null) : null,
-});
+const parseConsoleOp = (ex: any) => {
+  const { expression } = ex;
+  const type = expression.callee.property.name; // log, error, warn
+  let value = null;
+  let valueType = null; // null, Identifier, or Literal
+  let valueIdentifierName = null;
+  if(expression.arguments[0]) {
+    value = expression.arguments[0].value;
+    valueType = expression.arguments[0].type;
+    if (expression.arguments[0].type) {
+      valueIdentifierName = expression.arguments[0].type;
+    }
+    if(valueType === 'BinaryExpression') {
+      value = evaluators.evaluateBinary(parseBinary(expression.arguments[0]));
+    }
+  }
+  return {
+    type,
+    value,
+    valueType,
+    valueIdentifierName,
+  }
+};
 
 const parsers: { [key: string]: any } = {
   parseExpressionArgument,
