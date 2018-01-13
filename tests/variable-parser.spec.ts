@@ -132,6 +132,36 @@ describe('Variable Parser', () => {
     expect(actualOutput).to.deep.equal(expectedOutput);
   });
 
+  it('should parse variable declaration with empty object literal as initial value', () => {
+    const code = `let myArr = {};`;
+    const actualOutput = parseFirstLineVariable(code);
+    const expectedOutput = {
+      name: 'myArr',
+      value: {},
+      initialValue: {},
+      type: 'object',
+      initialType: 'object',
+      kind: 'let',
+    };
+
+    expect(actualOutput).to.deep.equal(expectedOutput);
+  });
+
+  it('should parse variable declaration with object literal as initial value', () => {
+    const code = `let myArr = { name: 'john', age: 23 };`;
+    const actualOutput = parseFirstLineVariable(code);
+    const expectedOutput = {
+      name: 'myArr',
+      value: { name: 'john', age: 23 },
+      initialValue: { name: 'john', age: 23 },
+      type: 'object',
+      initialType: 'object',
+      kind: 'let',
+    };
+
+    expect(actualOutput).to.deep.equal(expectedOutput);
+  });
+
   it('should parse const variable declaration', () => {
     const code = `const myVar = 5;`;
     const actualOutput = parseFirstLineVariable(code);
@@ -146,4 +176,15 @@ describe('Variable Parser', () => {
 
     expect(actualOutput).to.deep.equal(expectedOutput);
   });
+
+  // TODO
+  // it('should warn on const variable declaration without value', () => {
+  //   const code = `const myVar;`;
+  //   const actualOutput = parseFirstLineVariable(code);
+  //   const expectedOutput = {
+  //     error: 'Const declaration not accompanied by initial value assignment!';
+  //   };
+
+  //   expect(actualOutput).to.deep.equal(expectedOutput);
+  // });
 });

@@ -10,7 +10,15 @@ const parseArrayElement = (elem: any) => {
   }
 
   // TODO handle object element
-  return {};
+  return false;
+};
+
+const parseObjectProperty = (property: any) => {
+  // only for literal
+  return {
+    key: property.key.name,
+    value: property.value.value,
+  };
 };
 
 // parse easy to read variable object
@@ -30,6 +38,18 @@ const parseVariable = (variable: any) => {
       const parsedArray = arrayElements.map(parseArrayElement);
       initialValue = parsedArray;
       initialType = 'array';
+    }
+
+    if(declarations[0].init.type === 'ObjectExpression') {
+      let parsedObject = {};
+      const objectProperties = variable.declarations[0].init.properties;
+      const parsedProperties: any = objectProperties.map(parseObjectProperty);
+      parsedProperties.forEach((prop: any) => {
+        parsedObject[prop.key] = prop.value;
+      });
+
+      initialValue = parsedObject;
+      initialType = 'object';
     }
   }
 
