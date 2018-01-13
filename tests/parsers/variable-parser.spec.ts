@@ -1,5 +1,5 @@
-import lib from '../src';
-import variableParser from '../src/parsers/variable';
+import lib from '../../src';
+import variableParser from '../../src/parsers/variable';
 
 import mocha from 'mocha';
 import { expect } from 'chai';

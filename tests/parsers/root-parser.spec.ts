@@ -1,4 +1,4 @@
-import lib from '../src';
+import lib from '../../src';
 
 import mocha from 'mocha';
 import { expect } from 'chai';

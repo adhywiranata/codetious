@@ -1,5 +1,5 @@
-import lib from '../src';
-import functionParser from '../src/parsers/function';
+import lib from '../../src';
+import functionParser from '../../src/parsers/function';
 
 import mocha from 'mocha';
 import { expect } from 'chai';
