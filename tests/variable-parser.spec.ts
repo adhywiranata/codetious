@@ -117,6 +117,21 @@ describe('Variable Parser', () => {
     expect(actualOutput).to.deep.equal(expectedOutput);
   });
 
+  it('should parse variable declaration with deep nested array as initial value', () => {
+    const code = `let myArr = [[[[[1, [2]]], [5, 6]]], [5, [2, 1]]];`;
+    const actualOutput = parseFirstLineVariable(code);
+    const expectedOutput = {
+      name: 'myArr',
+      value: [[[[[1, [2]]], [5, 6]]], [5, [2, 1]]],
+      initialValue: [[[[[1, [2]]], [5, 6]]], [5, [2, 1]]],
+      type: 'array',
+      initialType: 'array',
+      kind: 'let',
+    };
+
+    expect(actualOutput).to.deep.equal(expectedOutput);
+  });
+
   it('should parse const variable declaration', () => {
     const code = `const myVar = 5;`;
     const actualOutput = parseFirstLineVariable(code);
