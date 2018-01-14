@@ -1,8 +1,8 @@
-import expressionValidator from './validators/expression';
+import validator from './validators';
 import expressionParser from './parsers/expression';
 
 const getBinary = (statement: any) => {
-  if(expressionValidator.isValidBinary(statement)) {
+  if(validator.isBinary(statement)) {
     return expressionParser.parseBinary(statement);
   }
 

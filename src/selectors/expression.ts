@@ -1,5 +1,5 @@
 import expressionParser from '../parsers/expression';
-import expressionValidator from '../validators/expression';
+import validator from '../validators';
 
 // get all expressions
 /*
@@ -10,11 +10,11 @@ expression types:
 */
 
 // expressions types filters
-const filterExpressions = (code: any) => code.filter(expressionValidator.isExpression);
+const filterExpressions = (code: any) => code.filter(validator.isExpression);
 
-const filterConsoleOps = (code: any) => filterExpressions(code).filter(expressionValidator.isConsoleOp);
+const filterConsoleOps = (code: any) => filterExpressions(code).filter(validator.isConsoleOp);
 
-const filterAssignments = (code: any) => filterExpressions(code).filter(expressionValidator.isAssignment);
+const filterAssignments = (code: any) => filterExpressions(code).filter(validator.isAssignment);
 
 // get all expressions with any type
 const getAllExpressions = (code: any) => filterExpressions(code).map(expressionParser.parseExpression);

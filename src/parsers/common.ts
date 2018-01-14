@@ -4,6 +4,8 @@ import variableParser from './variable';
 import functionParser from './function';
 import expressionParser from './expression';
 
+import validators from '../validators';
+
 // parse deep: parse all code to esprima parsed object
 const parseDeep = (code: any) => code;
 const parseDeepToString = (code: any) => util.inspect(code, false, null);
@@ -18,7 +20,19 @@ const resolveLine = (line: any) => {
     return functionParser.parseFunction(line);
   }
 
-  if (line.type === 'ExpressionStatement') {
+  if (validators.isBinary(line)) {
+    return expressionParser.parseBinary(line);
+  }
+
+  if (validators.isAssignment(line)) {
+    return expressionParser.parseAssignment(line);
+  }
+
+  if (validators.isConsoleOp(line)) {
+    return expressionParser.parseConsoleOp(line);
+  }
+
+  if (validators.isExpression(line)) {
     return expressionParser.parseExpression(line);
   }
 
