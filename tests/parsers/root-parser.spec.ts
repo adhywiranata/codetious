@@ -28,4 +28,17 @@ describe('Esprima Wrapped Parser ', () => {
     expect(lib.parseDeep(code)).to.have.length(1);
     expect(lib.parseDeep(code)).to.deep.equal(expectedOutput);
   });
+
+  it('should parse flattened code', () => {
+    const code = `
+      let myVar;
+      let hello = "world";
+      function hoi() {}
+      5 + 7
+    `;
+
+    console.log(lib.parseFlatten(code));
+
+    expect(true).to.have.equal(false);
+  });
 });
