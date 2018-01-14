@@ -70,7 +70,7 @@ const parseConsoleOp = (ex: any) => {
     value = expression.arguments[0].value;
     valueType = expression.arguments[0].type;
     if (valueType === 'Identifier') {
-      valueIdentifierName = expression.arguments[0].type;
+      valueIdentifierName = expression.arguments[0].name;
     }
     if(valueType === 'BinaryExpression') {
       value = evaluators.evaluateBinary(parseBinary(expression.arguments[0]));

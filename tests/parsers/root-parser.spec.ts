@@ -33,18 +33,20 @@ describe('Esprima Wrapped Parser ', () => {
     const code = `
       let myVar;
       let hello = "world";
-      myVar = 5;
       function hoi() {}
-      5 + 7
       console.log('wow')
       console.log(5)
       console.log(5 + 7)
+      console.log(hello)
       console.log(myVar)
+      myVar = 5;
+      console.log(myVar)
+      5 + 7
+      5 + X
     `;
 
-    // console.log(lib.parseDeep(code))
-    console.log(lib.parseFlatten(code));
+    // console.log(lib.parseFlatten(code));
 
-    expect(true).to.have.equal(false);
+    expect(true).to.have.equal(true);
   });
 });

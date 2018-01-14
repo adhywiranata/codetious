@@ -11,9 +11,26 @@ const parseDeep = (code: any) => code;
 const parseDeepToString = (code: any) => util.inspect(code, false, null);
 
 // TODO parse flatten: parse all code to evaluated identifier and expressions
+type ScopedWindowType = {
+  identifiers: any,
+  functions: any
+};
+
+// scopeWindow is used to store any variables and function declarations when the next line of code need them
+const scopedWindow: ScopedWindowType = {
+  identifiers: [], // stored variables { name: string, value: any }
+  functions: [], // stored functions
+};
+
 const resolveLine = (line: any) => {
   if (validators.isVariableDeclaration(line)) {
-    return variableParser.parseVariable(line);
+    const parsedVariable = variableParser.parseVariable(line);
+    scopedWindow.identifiers.push({
+      name: parsedVariable.name,
+      value: parsedVariable.value,
+    });
+
+    return parsedVariable;
   }
 
   if (validators.isFunctionDeclaration(line)) {
@@ -25,11 +42,37 @@ const resolveLine = (line: any) => {
   }
 
   if (validators.isAssignment(line)) {
-    return expressionParser.parseAssignment(line);
+    const parsedAssignment = expressionParser.parseAssignment(line);
+    // lookup current window scope and update variable values
+    const mappedIdentifierNames = scopedWindow.identifiers.map((i: { name: string, value: any }) => i.name);
+    const identifierName = parsedAssignment.identifier;
+
+    if(mappedIdentifierNames.includes(identifierName)) {
+      const identifierIndex = mappedIdentifierNames.indexOf(identifierName);
+      scopedWindow.identifiers[identifierIndex].value = parsedAssignment.value;
+    }
+
+    return parsedAssignment;
   }
 
   if (validators.isConsoleOp(line)) {
-    return expressionParser.parseConsoleOp(line);
+    const parsedConsoleOp = expressionParser.parseConsoleOp(line);
+    const scopeEvaluatedConsoleOp = { ...parsedConsoleOp };
+
+    // lookup current window scope for identifiers
+    if(scopeEvaluatedConsoleOp.valueType === 'Identifier') {
+      const mappedIdentifierNames = scopedWindow.identifiers.map((i: { name: string, value: any }) => i.name);
+      const identifierName = scopeEvaluatedConsoleOp.valueIdentifierName;
+
+      if(mappedIdentifierNames.includes(identifierName)) {
+        const identifierIndex = mappedIdentifierNames.indexOf(identifierName);
+        const identifier = scopedWindow.identifiers[identifierIndex]
+
+        scopeEvaluatedConsoleOp.value = identifier.value
+      }
+    }
+
+    return scopeEvaluatedConsoleOp;
   }
 
   if (validators.isExpression(line)) {
@@ -39,9 +82,7 @@ const resolveLine = (line: any) => {
   return line;
 };
 
-const parseFlatten = (code: any) => {
-  return code.map(resolveLine);
-};
+const parseFlatten = (code: any) => code.map(resolveLine);
 
 const parseFlattenToString = (code: any) => util.inspect(parseFlatten(code), false, null);
 
