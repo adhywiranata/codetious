@@ -12,11 +12,11 @@ const parseDeepToString = (code: any) => util.inspect(code, false, null);
 
 // TODO parse flatten: parse all code to evaluated identifier and expressions
 const resolveLine = (line: any) => {
-  if (line.type === 'VariableDeclaration') {
+  if (validators.isVariableDeclaration(line)) {
     return variableParser.parseVariable(line);
   }
 
-  if (line.type === 'FunctionDeclaration') {
+  if (validators.isFunctionDeclaration(line)) {
     return functionParser.parseFunction(line);
   }
 
