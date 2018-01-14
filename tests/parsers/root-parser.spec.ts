@@ -184,7 +184,7 @@ describe('Esprima Wrapped Parser ', () => {
       console.log(deleteMeAfterNewParseCall);
     `
 
-    const actualOuput = lib.parseFlatten(secondCode);
+    const actualOutput = lib.parseFlatten(secondCode);
 
     const unexpectedOutput = [
       {
@@ -195,7 +195,7 @@ describe('Esprima Wrapped Parser ', () => {
       }
     ];
 
-    expect(actualOuput).to.not.deep.equal(unexpectedOutput);
+    expect(actualOutput).to.not.deep.equal(unexpectedOutput);
   });
 
   it('should parse flattened code with resolved log binary expression value involving some variable identifier', () => {
