@@ -17,7 +17,7 @@ type ScopedWindowType = {
 };
 
 // scopeWindow is used to store any variables and function declarations when the next line of code need them
-const scopedWindow: ScopedWindowType = {
+let scopedWindow: ScopedWindowType = {
   identifiers: [], // stored variables { name: string, value: any }
   functions: [], // stored functions
 };
@@ -82,7 +82,14 @@ const resolveLine = (line: any) => {
   return line;
 };
 
-const parseFlatten = (code: any) => code.map(resolveLine);
+const parseFlatten = (code: any) => {
+  // reset scopedWindow to remove "saved" values previously evaluated
+  scopedWindow = {
+    identifiers: [],
+    functions: [],
+  };
+  return code.map(resolveLine);
+}
 
 const parseFlattenToString = (code: any) => util.inspect(parseFlatten(code), false, null);
 
