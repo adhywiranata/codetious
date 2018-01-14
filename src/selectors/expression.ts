@@ -26,9 +26,6 @@ const getAllAssignments = (code: any) => filterAssignments(code).map(expressionP
 const getAllConsoleOps = (code: any) => filterConsoleOps(code).map(expressionParser.parseConsoleOp);
 
 const expressionSelector: { [key: string]: any } = {
-  filterExpressions,
-  filterAssignments,
-  filterConsoleOps,
   getAllExpressions,
   getAllAssignments,
   getAllConsoleOps,

@@ -20,7 +20,6 @@ const getVariableByName = (code: any, name: string) => {
 };
 
 const variableSelector: { [key: string]: any } = {
-  filterVariables,
   getVariableByName,
   getAllVariables,
 };
