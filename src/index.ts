@@ -14,7 +14,7 @@ const injectCommonParserModule = (childparserKey: string) => {
   exposedModule[childparserKey] = (code: string, ...params: any[]) => {
     const currentChildSelector = commonParser[childparserKey];
     const parsedCode = lib.esprimaParser(code);
-    return currentChildSelector[childparserKey](parsedCode, ...params);
+    return currentChildSelector(parsedCode, ...params);
   };
 };
 
@@ -38,7 +38,5 @@ Object.keys(rootSelectors).forEach(injectSelectorModule);
 // Object.keys(restParsers).forEach(injectParsersModule);
 // Object.keys(rootCursors).forEach(injectCursorsModule);
 // Object.keys(rootEvaluators).forEach(injectEvaluatorsModule);
-
-console.log(exposedModule)
 
 export default exposedModule;
