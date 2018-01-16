@@ -23,8 +23,8 @@ Sometimes we need to thoroughly check some codes, not just the output, wether it
 - [ ] Recursion Errors Handling
 - [ ] Deep Variable Listing
 - [ ] Deep Variable Lookup
-- [ ] Asynchonous Processes Listing
-- [ ] Asynchonous Processes Lookup
+- [ ] Asynchronous Processes Listing
+- [ ] Asynchronous Processes Lookup
 
 ## Docs
 
