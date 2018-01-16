@@ -17,6 +17,7 @@ Sometimes we need to thoroughly check some codes, not just the output, wether it
 - [x] Expressions Listing
 - [x] Expressions Types Grouping
 - [x] Function Listing
+- [x] Handle Evaluations
 - [ ] Conditionals Handling
 - [ ] Loop Errors Handling
 - [ ] Recursion Errors Handling
